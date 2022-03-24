@@ -1,5 +1,5 @@
 //
-// Created by Andrei Paul Ionescu on 21/03/2022.
+// Created by Andrei-Paul Ionescu on 21/03/2022.
 //
 
 #include <assert.h>
@@ -190,11 +190,14 @@ int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second){
 
             while(pointer_towards_the_first != NULL){
 
-                if(pointer_towards_the_first->value > pointer_towards_the_second->value)
+                if(pointer_towards_the_first->value - '0' > pointer_towards_the_second->value - '0')
                     return -1;
                 else
-                if(pointer_towards_the_first->value < pointer_towards_the_second->value)
+                if(pointer_towards_the_first->value - '0' < pointer_towards_the_second->value - '0')
                     return 1;
+
+                pointer_towards_the_first = pointer_towards_the_first->next;
+                pointer_towards_the_second = pointer_towards_the_second->next;
             }
 
             return 0;
@@ -287,27 +290,51 @@ unbounded_int ll2unbounded_int(long long int integer){
 
     if(result == NULL) abort();
 
-    if(integer < 0) result->sign = '-';
-    else result->sign = '+';
+    if(integer >= 0){
+
+        result->sign = '+';
+    } else{
+
+        result->sign = '-';
+    }
 
     digit *tail = malloc(sizeof(digit));
 
+    // TODO: Alter the manner in which we treat problematic cases so that they will comply with the norm given out
+    //  by the professor.
     if(tail == NULL) abort();
 
-    while(integer){
+    result->length = 0;
 
+    // TODO: Fix the length issue.
 
-        tail->value = convertIntToChar(integer%10);
+    while(integer > 0){
+
+        printf("%c",convertIntToChar((integer%10)));
+        tail->value = convertIntToChar((integer%10));
         tail->next = malloc(sizeof(digit));
 
         if(tail->next == NULL) abort();
 
         tail = tail->next;
-
         integer /= 10;
+        result->length += 1;
     }
 
     result->last = tail;
+
+    printf("%zu", result->length);
+
+    digit *head = result->last;
+
+
+    for(int i = 0 ; i < result->length ; ++i){
+
+        head = head->previous;
+    }
+
+    result->first = head;
+
 
     return *result;
 }
