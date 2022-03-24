@@ -33,8 +33,52 @@ typedef struct{
 
 }unbounded_int;
 
+// Prototypes of the function.
+
 // Helper methods.
+char convertIntToChar(int value){
+    /**
+     *
+     * @param value, an integer value, which due to the design of the header will always be a digit.
+     *
+     * Helper method which converts an integer, which we assume to be a digit, into its corresponding character
+     * and then it returns it to the caller.
+     *
+     * @author Andrei-Paul Ionescu
+     * @version 0.01
+     * @date 23.03.2022
+     */
+
+    switch(value){
+
+        case 0: return '0';
+        case 1: return '1';
+        case 2: return '2';
+        case 3: return '3';
+        case 4: return '4';
+        case 5: return '5';
+        case 6: return '6';
+        case 7: return '7';
+        case 8: return '8';
+        case 9: return '9';
+
+        default: ;
+    }
+}
+
+
 int lengthOfString(const char *string){
+    /**
+     *
+     * @param string, a String object( a pointer which directs us to a zone in memory containing a string that is a
+     * sequence of char<1 octet> which end by the special character '\0'.
+     *
+     * Helper method, used so as to compute the length of the String given as the parameter.
+     *
+     * @author Andrei-Paul Ionescu
+     * @version 0.01
+     * @date 23.03.2022
+     */
 
     assert(string != NULL);
     int length = 0;
@@ -49,6 +93,19 @@ int lengthOfString(const char *string){
 }
 
 int containsOnlyDigits(const char *string){
+    /**
+     *
+     *
+     * @param string, a String object.
+     *
+     * Helper method which determines whether the string given as input for the method
+     * string2unbounded_int(const char * e) is a valid string or not. We consider a valid string a sequence of
+     * digits, any other character within the string will cause the string to be labelled as invalid.
+     *
+     * @author Andrei-Paul Ionescu
+     * @version 0.01
+     * @date 23.03.2022
+     */
 
     assert(string != NULL);
 
@@ -64,15 +121,128 @@ int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
+char *unbounded_int2string(unbounded_int unboundedInt){
+    /**
+     *
+     * @param unboundedInt, an object of type unboundedInt
+     *
+     * This here method converts an unboundedInt object into a string.
+     *
+     *
+     *
+     * @author Andrei-Paul Ionescu
+     * @version 0.01
+     * @date 24.03.2022
+     */
+
+    // TODO: Add support for the rare case in which user decide to depict positive numbers by giving the sign as well.
+
+    assert(unboundedInt.sign != '*');
+
+    if(unboundedInt.sign == '+'){
+
+        // In the case where the sign of the number is plus we will omit it from the representation of the
+        // unbounded_int object as a string object.
+
+        int length_of_unbounded_int = unboundedInt.length;
+
+        char *result = malloc(sizeof(char) * (length_of_unbounded_int + 1));
+
+        if (result == NULL) {
+
+            return NULL;
+        }
+
+
+        digit *pointer = unboundedInt.first;
+        char *pointer_to_string = result;
+
+        for(int i = 0 ; i < length_of_unbounded_int ; ++i){
+
+            *pointer_to_string = pointer->value;
+            pointer_to_string += 1;
+            pointer = pointer->next;
+        }
+
+
+        return result;
+    } else if(unboundedInt.sign == '-'){
+
+        int length_of_unbounded_int = unboundedInt.length;
+
+        char *result = malloc(sizeof(char) * (length_of_unbounded_int + 1));
+
+        if (result == NULL) {
+
+            return NULL;
+        }
+
+
+
+        digit *pointer = unboundedInt.first;
+        char *pointer_to_string = result;
+
+        for(int i = 0 ; i < length_of_unbounded_int ; ++i){
+
+            *pointer_to_string = pointer->value;
+            pointer_to_string += 1;
+            pointer = pointer->next;
+        }
+
+        return result;
+
+        return NULL;
+    }
+}
+
 unbounded_int ll2unbounded_int(long long int integer){
 
     // TODO: I will have to document myself about how long long int are implemented in C so as to be able to take
     //  advantage of that and thus manipulate more easily the memory.
 
-    return (unbounded_int){};
+    unbounded_int *result = malloc(sizeof(unbounded_int));
+
+    if(result == NULL) abort();
+
+    if(integer < 0) result->sign = '-';
+    else result->sign = '+';
+
+    digit *tail = malloc(sizeof(digit));
+
+    if(tail == NULL) abort();
+
+    while(integer){
+
+
+        tail->value = convertIntToChar(integer%10);
+        tail->next = malloc(sizeof(digit));
+
+        if(tail->next == NULL) abort();
+
+        tail = tail->next;
+
+        integer /= 10;
+    }
+
+    result->last = tail;
+
+    return *result;
 }
 
 unbounded_int string2unbounded_int(const char *e){
+    /**
+     *
+     * @param e, a String object.
+     *
+     * The function converts a String object into an unbounded_int object, case the object is unable to be created
+     * due to the reason that the String does not contain integers then the function will return a structure containing
+     * NULL values for the pointers which indicate the tail and the head of the doubled chained list we so as to
+     * represent the number and an '*' for the sign of the structure.
+     *
+     * @author Andrei-Paul Ionescu
+     * @version 0.01
+     * @date 23.03.2022
+     */
 
     assert(e != NULL);
 
@@ -80,49 +250,154 @@ unbounded_int string2unbounded_int(const char *e){
 
     if(temporary == NULL) abort();
 
-    if(containsOnlyDigits(e) == 0){
+    if(*e == '-'){
 
-        temporary->sign   ='*';
-        temporary->length = 0;
-        temporary->first  = NULL;
-        temporary ->last  = NULL;
-        return *temporary;
+        if(containsOnlyDigits(e + 1) == 0){
+
+            temporary->sign   ='*';
+            temporary->length = 0;
+            temporary->first  = NULL;
+            temporary ->last  = NULL;
+            return *temporary;
+        }
+
+
+        temporary->sign = '-';
+        temporary->length = lengthOfString(e + 1);
+
+
+        digit *tail = malloc(sizeof(digit));
+
+        if(tail == NULL) abort();
+
+        int off_set = 1; // Digits are offset by one position due to the apparition of the sign.
+
+        while(*(e + off_set) != '\0'){
+
+            tail->value = *(e + off_set);
+            tail->next = malloc(sizeof(digit));
+
+            if(tail->next == NULL) abort();
+
+            digit *tmp = tail;
+            tail = tail->next;
+            tail->previous = tmp;
+
+            e += 1;
+        }
+
+        temporary->last  = tail->previous;
+        temporary->last->next = NULL;
+
+        digit *head = tail;
+
+        for(int times = 0 ; times < temporary->length ; ++times){
+
+            head = head->previous;
+        }
+
+        temporary->first = head;
+        temporary->first->previous = NULL;
+    } else if(*e == '+'){
+
+        if(containsOnlyDigits(e + 1) == 0){
+
+            temporary->sign   ='*';
+            temporary->length = 0;
+            temporary->first  = NULL;
+            temporary ->last  = NULL;
+            return *temporary;
+        }
+
+        temporary->sign = '+';
+        temporary->length = lengthOfString(e + 1);
+
+        digit *tail = malloc(sizeof(digit));
+
+        if(tail == NULL) abort();
+
+        int off_set = 1; // Digits are offset by one position due to the apparition of the sign.
+
+
+        while(*(e + off_set) != '\0'){
+
+            tail->value = *(e + off_set) ;
+            tail->next = malloc(sizeof(digit));
+
+            if(tail->next == NULL) abort();
+
+            digit *tmp = tail;
+            tail = tail->next;
+            tail->previous = tmp;
+
+            e += 1;
+        }
+
+        temporary->last  = tail->previous;
+        temporary->last->next = NULL;
+
+        digit *head = tail;
+
+        for(int times = 0 ; times < temporary->length ; ++times){
+
+            head = head->previous;
+        }
+
+        temporary->first = head;
+        temporary->first->previous = NULL;
+
+        temporary->sign = '+';
+        temporary->length = lengthOfString(e+1);
+    } else{
+
+        // If no sign is specified we assume that the number is positive and hence its corresponding sign is '+'.
+
+        if(containsOnlyDigits(e) == 0){
+
+            temporary->sign   ='*';
+            temporary->length = 0;
+            temporary->first  = NULL;
+            temporary ->last  = NULL;
+            return *temporary;
+        }
+
+
+        temporary->sign   = '+';
+        temporary->length = lengthOfString(e);
+
+
+        digit *tail = malloc(sizeof(digit));
+
+        if(tail == NULL) abort();
+
+
+        while(*e != '\0'){
+
+            tail->value = *e;
+            tail->next = malloc(sizeof(digit));
+
+            if(tail->next == NULL) abort();
+
+            digit *tmp = tail;
+            tail = tail->next;
+            tail->previous = tmp;
+
+            e += 1;
+        }
+
+        temporary->last  = tail->previous;
+        temporary->last->next = NULL;
+
+        digit *head = tail;
+
+        for(int times = 0 ; times < temporary->length ; ++times){
+
+            head = head->previous;
+        }
+
+        temporary->first = head;
+        temporary->first->previous = NULL;
     }
-
-    temporary->length = lengthOfString(e);
-    temporary->sign = '+';
-
-    digit *tail = malloc(sizeof(digit));
-
-    if(tail == NULL) abort();
-
-
-    while(*e != '\0'){
-
-        tail->value = *e;
-        tail->next = malloc(sizeof(digit));
-
-        if(tail->next == NULL) abort();
-
-        digit *tmp = tail;
-        tail = tail->next;
-        tail->previous = tmp;
-
-        e += 1;
-    }
-
-    temporary->last  = tail->previous;
-    temporary->last->next = NULL;
-
-    digit *head = tail;
-
-    for(int times = 0 ; times < temporary->length ; ++times){
-
-        head = head->previous;
-    }
-
-    temporary->first = head;
-    temporary->first->previous = NULL;
 
     return *temporary;
 }
