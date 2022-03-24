@@ -34,6 +34,7 @@ typedef struct{
 }unbounded_int;
 
 // Prototypes of the function.
+int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second);
 
 // Helper methods.
 char convertIntToChar(int value){
@@ -64,6 +65,8 @@ char convertIntToChar(int value){
 
         default: ;
     }
+
+    return 'E';
 }
 
 
@@ -121,6 +124,86 @@ int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
+int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second){
+    /**
+     *
+     * @param1 first, an unbounded_int.
+     * @param2 second, an unbounded_int.
+     *
+     * This method compares two unbounded_int objects and returns one of the values -1, 0 and 1 depending on whether
+     * the two unbounded_int represent two integers who have the property that max(first, second) is first,
+     * they are equal or max(first, second) second respectively.
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 24.03.2022
+     * @version 0.01
+     */
+
+    assert(first.sign != '*' && second.sign != '*');
+
+    if(first.sign == '-' && second.sign == '+'){
+
+        return 1;
+    } else if(first.sign == '+' && second.sign == '-'){
+
+        return -1;
+    } else if(first.sign == '+' && second.sign == '+'){
+
+        if(first.length > second.length){
+
+            return 1;
+        } else if(first.length < second.length){
+
+            return -1;
+        } else if(first.length == second.length){
+
+                digit *pointer_towards_the_first    = first.first;
+                digit *pointer_towards_the_second   = second.first;
+
+
+                while(pointer_towards_the_first != NULL){
+
+                    if(pointer_towards_the_first->value - '0' > pointer_towards_the_second->value - '0')
+                        return 1;
+                    else
+                        if(pointer_towards_the_first->value - '0' < pointer_towards_the_second->value - '0')
+                            return -1;
+
+                   pointer_towards_the_first = pointer_towards_the_first->next;
+                   pointer_towards_the_second = pointer_towards_the_second->next;
+                }
+
+                return 0;
+            }
+    } else if(first.sign == '-' && second.sign == '-'){
+
+        if(first.length > second.length){
+
+            return -1;
+        } else if(first.length < second.length){
+
+            return 1;
+        } else if(first.length == second.length){
+
+            digit *pointer_towards_the_first    = first.first;
+            digit *pointer_towards_the_second   = second.first;
+
+            while(pointer_towards_the_first != NULL){
+
+                if(pointer_towards_the_first->value > pointer_towards_the_second->value)
+                    return -1;
+                else
+                if(pointer_towards_the_first->value < pointer_towards_the_second->value)
+                    return 1;
+            }
+
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
 char *unbounded_int2string(unbounded_int unboundedInt){
     /**
      *
@@ -191,8 +274,8 @@ char *unbounded_int2string(unbounded_int unboundedInt){
 
         return result;
 
-        return NULL;
     }
+    return NULL;
 }
 
 unbounded_int ll2unbounded_int(long long int integer){
