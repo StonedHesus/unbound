@@ -283,59 +283,57 @@ char *unbounded_int2string(unbounded_int unboundedInt){
 
 unbounded_int ll2unbounded_int(long long int integer){
 
-    // TODO: I will have to document myself about how long long int are implemented in C so as to be able to take
-    //  advantage of that and thus manipulate more easily the memory.
-
     unbounded_int *result = malloc(sizeof(unbounded_int));
 
     if(result == NULL) abort();
 
     if(integer >= 0){
 
-        result->sign = '+';
+        result->sign = '+'; // I might replace the sign by macro constants.
     } else{
 
         result->sign = '-';
     }
 
-    digit *tail = malloc(sizeof(digit));
+    int length = 0;
 
-    // TODO: Alter the manner in which we treat problematic cases so that they will comply with the norm given out
-    //  by the professor.
-    if(tail == NULL) abort();
-
-    result->length = 0;
-
-    // TODO: Fix the length issue.
+    digit *head = malloc(sizeof(digit));
+    if(head == NULL) abort();
 
     while(integer > 0){
 
-        printf("%c",convertIntToChar((integer%10)));
-        tail->value = convertIntToChar((integer%10));
-        tail->next = malloc(sizeof(digit));
+        head->value = convertIntToChar(((int)integer%10));
+        head->previous  = malloc(sizeof(digit));
+        if(head->previous == NULL) abort();
 
-        if(tail->next == NULL) abort();
+
+        if(length == 0){
+
+            head->next = NULL;
+        } else{
+
+            digit *temporary = head;
+            head = head->previous;
+            head->next = temporary;
+        }
+
+        integer /= 10;
+        length += 1;
+    }
+
+    // Assign the length of the long long int to the unbounded_int object.
+    result->length = length;
+
+    result->first = head->next;
+
+    digit *tail = head;
+
+    for(int index = 0 ; index < length - 1 ; ++index){
 
         tail = tail->next;
-        integer /= 10;
-        result->length += 1;
     }
 
     result->last = tail;
-
-    printf("%zu", result->length);
-
-    digit *head = result->last;
-
-
-    for(int i = 0 ; i < result->length ; ++i){
-
-        head = head->previous;
-    }
-
-    result->first = head;
-
-
     return *result;
 }
 

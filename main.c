@@ -22,9 +22,9 @@ int main() {
 
     long long int test_value = 19;
 
-    unbounded_int instantiation_from_lli = ll2unbounded_int(123);
+    unbounded_int instantiation_from_lli = ll2unbounded_int(test_value);
 
-    printf("\n%d", instantiation_from_lli.length);
+    printf("\n%c", instantiation_from_lli.first->next->value);
 
     return EXIT_SUCCESS;
 }
