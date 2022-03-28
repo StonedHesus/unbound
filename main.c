@@ -20,11 +20,12 @@ int main() {
 
     printf("\n\t%s", unbounded_int2string(string2unbounded_int("123")));
 
-    long long int test_value = 19;
+    long long int test_value = 192;
 
     unbounded_int instantiation_from_lli = ll2unbounded_int(test_value);
 
-    printf("\n%c", instantiation_from_lli.first->next->value);
+    //printf("\n%c", instantiation_from_lli.last->previous->previous->previous->value);
+    printf("\n\t\t%s", unbounded_int2string(string2unbounded_int("-3100")));
 
     return EXIT_SUCCESS;
 }

@@ -35,9 +35,12 @@ typedef struct{
 
 // Prototypes of the function.
 int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second);
+unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second);
+unbounded_int ll2unbounded_int(long long int integer);
+unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second);
 
 // Helper methods.
-char convertIntToChar(int value){
+static char convertIntToChar(int value){
     /**
      *
      * @param value, an integer value, which due to the design of the header will always be a digit.
@@ -70,7 +73,7 @@ char convertIntToChar(int value){
 }
 
 
-int lengthOfString(const char *string){
+static int lengthOfString(const char *string){
     /**
      *
      * @param string, a String object( a pointer which directs us to a zone in memory containing a string that is a
@@ -95,7 +98,7 @@ int lengthOfString(const char *string){
     return length;
 }
 
-int containsOnlyDigits(const char *string){
+static int containsOnlyDigits(const char *string){
     /**
      *
      *
@@ -124,6 +127,123 @@ int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
+unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second){
+    /**
+     *
+     * @param1 first, an unbounded_int.
+     * @param2 second, an unbounded_int.
+     *
+     * This here method computes the difference betwixt first and second, which are unbounded_int objects and it
+     * returns a new unbounded_int which contains the result of this operation.
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 28.03.2022
+     * @version 28.03.2022
+     */
+
+
+    return (unbounded_int){};
+}
+unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
+    /**
+     *
+     * @param1 first, an unbounded_int.
+     * @param2 second, an unbounded_int.
+     *
+     *
+     * This here method computes the sum of two unbounded_int and returns a new unbounded_int which contains the result
+     * of the said operation.
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 26.03.2022
+     * @version 0.01
+     */
+
+    // Determine which number is the shortest and use its length so as to iterate thru the digits of the numbers so as
+    // perform the addition operation.
+
+    // TODO: ACCOUNT FOR SIGN RULES WHEN ADDING TWO INTEGERS AND MAKE SURE THAT THE PROPER SIGN IS BEING STORED.
+
+    if((first.sign == '+' && second.sign == '-') ||(first.sign == '-' && second.sign == '+')){
+
+        return unbounded_int_subtraction(first, second);
+    }
+
+    digit *pointer_towards_digit_of_the_first_number = first.last;
+    digit *pointer_towards_digit_of_the_second_number = second.last;
+    long long int addition_result = 0;
+    long long int remainder = 0;
+    int position = 1;
+
+    if(first.length >= second.length){
+
+        for(int index = 0 ; index < second.length ; ++index){
+
+
+            addition_result += (((pointer_towards_digit_of_the_first_number->value - '0') +
+                                 (pointer_towards_digit_of_the_second_number->value - '0')) % 10)*position;
+            addition_result += remainder*position;
+
+            remainder =  ((pointer_towards_digit_of_the_first_number->value - '0') +
+                          (pointer_towards_digit_of_the_second_number->value - '0')) / 10;
+
+
+
+            pointer_towards_digit_of_the_first_number = pointer_towards_digit_of_the_first_number->previous;
+            pointer_towards_digit_of_the_second_number = pointer_towards_digit_of_the_second_number->previous;
+            position *= 10;
+        }
+
+        // Add the remaining digits from the longest number, in this case first.
+        for(int index = second.length ; index < first.length ; ++index){
+
+
+            addition_result += ((pointer_towards_digit_of_the_first_number->value - '0') * position) +
+                    remainder*position;
+
+            remainder = (pointer_towards_digit_of_the_first_number->value - '0')/10;
+            pointer_towards_digit_of_the_first_number = pointer_towards_digit_of_the_first_number->previous;
+            position *= 10;
+        }
+
+    } else{
+
+        for(int index = 0 ; index < first.length ; ++index){
+
+
+            addition_result += (((pointer_towards_digit_of_the_first_number->value - '0') +
+                                 (pointer_towards_digit_of_the_second_number->value - '0')) % 10)*position;
+            addition_result += remainder*position;
+
+            remainder =  ((pointer_towards_digit_of_the_first_number->value - '0') +
+                          (pointer_towards_digit_of_the_second_number->value - '0')) / 10;
+
+
+
+            pointer_towards_digit_of_the_first_number = pointer_towards_digit_of_the_first_number->previous;
+            pointer_towards_digit_of_the_second_number = pointer_towards_digit_of_the_second_number->previous;
+            position *= 10;
+        }
+
+        // Add the remaining digits from the longest number, in this case second.
+
+        for(int index = first.length ; index < second.length ; ++index){
+
+
+            addition_result += ((pointer_towards_digit_of_the_second_number->value - '0') * position) +
+                    remainder*position;
+
+            remainder = (pointer_towards_digit_of_the_second_number->value - '0')/10;
+            pointer_towards_digit_of_the_second_number = pointer_towards_digit_of_the_second_number->previous;
+            position *= 10;
+        }
+    }
+
+
+    if(first.sign == '-' && second.sign == '-') addition_result *= -1;
+
+    return ll2unbounded_int(addition_result);
+}
 int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second){
     /**
      *
@@ -282,6 +402,17 @@ char *unbounded_int2string(unbounded_int unboundedInt){
 }
 
 unbounded_int ll2unbounded_int(long long int integer){
+    /**
+     *
+     * @param1 integer, a long long int whose going to be converted into an unbounded_int object.
+     *
+     * This here method takes as argument a long long int value which it converts into an unbounded_int object.
+     *
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 28.03.2022
+     * @version 0.02
+     */
 
     unbounded_int *result = malloc(sizeof(unbounded_int));
 
@@ -300,22 +431,17 @@ unbounded_int ll2unbounded_int(long long int integer){
     digit *head = malloc(sizeof(digit));
     if(head == NULL) abort();
 
+    head->next = NULL;
+
     while(integer > 0){
 
-        head->value = convertIntToChar(((int)integer%10));
+        head->value = convertIntToChar((((int)integer)%10));
         head->previous  = malloc(sizeof(digit));
         if(head->previous == NULL) abort();
 
-
-        if(length == 0){
-
-            head->next = NULL;
-        } else{
-
-            digit *temporary = head;
-            head = head->previous;
-            head->next = temporary;
-        }
+        digit *temporary = head;
+        head = head->previous;
+        head->next = temporary;
 
         integer /= 10;
         length += 1;
@@ -325,8 +451,9 @@ unbounded_int ll2unbounded_int(long long int integer){
     result->length = length;
 
     result->first = head->next;
+    result->first->previous = NULL;
 
-    digit *tail = head;
+    digit *tail = result->first;
 
     for(int index = 0 ; index < length - 1 ; ++index){
 
