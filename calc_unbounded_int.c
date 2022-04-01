@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 #include "unbounded-int.h"
+#include "execution-stack.h"
 
 typedef struct command{
 
@@ -14,7 +15,6 @@ typedef struct command{
 } command;
 
 typedef struct round_robin{
-
 
     struct round_robin *next;
     command *command;
@@ -27,6 +27,10 @@ static void print_command(command command);
 static void print_round_robin(round_robin roundRobin);
 static int checkFileName(const char *filename);
 static int isFileName(const char *entity);
+static void readFile(const char *path);
+
+// Global variables of the program.
+static stack memory;
 
 int main(int count, char **args){
     /**
@@ -42,38 +46,158 @@ int main(int count, char **args){
      * @data 26.03.2022
      */
 
-    round_robin *roundRobin = malloc(sizeof(roundRobin));
+    memory = create_execution_stack();
+    //readFile(args[1]);
+    stack my_stack = create_execution_stack();
 
-    if(roundRobin == NULL) exit(0);
 
-    int stored = 0;
+    add_back(&my_stack, "123");
+ add_back(&my_stack, "321");
+//
+//
+//    print_stack(&my_stack, FRONTWARDS);
+//    printf("\n");
+//
+    print_unbounded_int(pop_front(&my_stack), 1);
+    printf("\n");
+//    print_unbounded_int(pop_front(&my_stack), 1);
 
-    for(int i = 1 ; i < count ; ++i){
 
-        roundRobin->command = malloc(sizeof(command));
-        if(roundRobin->command == NULL) exit(0);
+//    round_robin *roundRobin = malloc(sizeof(roundRobin));
+//
+//    if(roundRobin == NULL) exit(0);
+//
+//    int stored = 0;
+//    int option_index = 0;
+//    int create = 0;
+//
+//    for(int i = 1 ; i < count ; ++i){
+//
+//        printf("%s\n", args[i]);
+//
+//        if(create == 0){
+//
+//            roundRobin->command = malloc(sizeof(command));
+//            if(roundRobin->command == NULL) exit(0);
+//            create = 1;
+//        }
+//
+//
+//        if(stored == 1){
+//
+//            roundRobin->next = malloc(sizeof(roundRobin));
+//            round_robin *temporary = roundRobin;
+//
+//            roundRobin = roundRobin->next;
+//            roundRobin->previous = temporary;
+//            stored = 0;
+//            option_index = 0;
+//            create = 0;
+//        }
+//
+//        if(isFileName(args[i])){
+//
+//            roundRobin->command->target = malloc(sizeof(char *));
+//            if(roundRobin->command->target == NULL) exit(1);
+//
+//            roundRobin->command->target = args[i];
+//            stored = 1;
+//        } else{
+//
+//            roundRobin->command->options[option_index] = args[i];
+//            option_index += 1;
+//        }
+//    }
 
-        if(stored == 1){
 
-            roundRobin->next = malloc(sizeof(roundRobin));
-            round_robin *temporary = roundRobin;
-
-            roundRobin = roundRobin->next;
-            roundRobin->previous = temporary;
-        }
-    }
-
-    //print_round_robin(*roundRobin);
-
-    checkFileName("test.ub");
-
-    if(isFileName("test.ub.ub") == EXIT_SUCCESS) printf("\nThe function does work");
 
     return EXIT_SUCCESS;
 }
 
 
 // Methods of the .c file.
+static void parseLine(char *line){
+    /**
+     *
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 01.04.2022
+     * @version 0.01
+     * @location BU Licences Sorbonne Campus PMC
+     */
+
+    char *token = strtok(line, " ");
+
+    int assign = 0;
+    int variable = 0;
+
+    // TODO: ACCOUNT FOR CASES IN WHICH WE DO NOT HAVE WHITESPACES HENCE A TURING MACHINE APPROACH WILL BE BETTER.
+    while(token){
+
+       if(strcmp(token, "print") == 0){
+
+
+           print_unbounded_int(pop_front(&memory), 1);
+           return;
+        }
+
+        if(assign == 1 && variable == 1){
+
+            add_back(&memory, token);
+
+            assign   = 0;
+            variable = 0;
+        }
+
+        if(isalpha(*token)){
+            variable = 1;
+        } else
+            if(strcmp(token, "=") == 0){
+
+            assign = 1;
+        }
+
+        token = strtok(NULL, " ");
+    }
+
+
+}
+
+static void readFile(const char *path){
+    /**
+     *
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 01.04.2022
+     * @version 0.01
+     * @location BU Licences Sorbonne Campus PMC
+     */
+
+    FILE *temporary;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    temporary = fopen(path, "r");
+
+    if(temporary == NULL){
+
+        printf("File error: The file which you wanted to read does not exist! "
+               "We advise double checking the path you used.\n");
+        exit(1);
+    }
+
+    while((read = getline(&line, &len, temporary)) != -1){
+
+        parseLine(line);
+    }
+
+    fclose(temporary);
+    if (line)
+        free(line);
+    //exit(EXIT_SUCCESS);
+}
+
 static int isFileName(const char *entity){
     /**
      * @param entity, a const char object.
@@ -83,31 +207,22 @@ static int isFileName(const char *entity){
      *
      * @author Andrei-Paul Ionescu
      * @date 28.03.2022
-     * @version 0.01
+     * @version 0.02
      */
 
     int times = 0;
 
-    char *result = (char *)entity;
+    char *result = strtok(strdup(entity), ".");
 
-    while(result != NULL){
+    while(result){
 
-        result = strstr(result, ".");
-
-        if(!result) {
-
-            result = NULL;
-        } else{
-
-            printf("%s", result);
-            times += 1;
-        }
+        times += 1;
+        result = strtok(NULL, ".");
     }
 
-    printf("%d", times);
-    if(times == 0 || times > 2) return EXIT_FAILURE;
-
-    return EXIT_SUCCESS;
+    if(times == 0 || times > 2) return 0;
+    else
+        return 1;
 }
 
 static int checkFileName(const char *filename){
@@ -130,11 +245,11 @@ static int checkFileName(const char *filename){
     if(!first_result && !second_result){
 
         printf("File format error: all files containing code written in unbound must finish with the "
-               "extension .unbound or .ub\n");
-        return EXIT_FAILURE;
+               "extension .unbound or .ub.\n");
+        return 0;
     }
 
-    return EXIT_SUCCESS;
+    return 1;
 }
 
 static void print_round_robin(round_robin roundRobin){

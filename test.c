@@ -138,44 +138,5 @@ void print_separator(char separator){
     printf("\n");
 }
 
-void print_unbounded_int(unbounded_int unboundedInt, int direction){
-    /**
-     *
-     * @param1, an unbounded_int object.
-     *
-     * Prints an unbounded_int object from head tail if direction is 1 or from tail to head if direction is 0
-     * to the stdout.
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 24.03.2022
-     * @version final
-     */
 
-    assert(unboundedInt.sign != '*' && (direction != 1 || direction != 0));
-
-    if(unboundedInt.sign == '-') printf("%c", unboundedInt.sign);
-
-    if(direction == 1){
-
-        digit *pointer = unboundedInt.first;
-
-        for(int index = 0 ; index < unboundedInt.length ; ++index){
-
-            printf("%c", pointer->value);
-            pointer = pointer->next;
-        }
-    }
-
-    if(direction == 0){
-
-        digit *pointer = unboundedInt.last;
-
-        for(int index = unboundedInt.length ; index > 0 ; --index){
-
-            printf("%c", pointer->value);
-            pointer = pointer->previous;
-        }
-    }
-
-}
 
