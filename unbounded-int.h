@@ -41,39 +41,6 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
 void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot);
 
 // Helper methods.
-static char convertIntToChar(int value){
-    /**
-     *
-     * @param value, an integer value, which due to the design of the header will always be a digit.
-     *
-     * Helper method which converts an integer, which we assume to be a digit, into its corresponding character
-     * and then it returns it to the caller.
-     *
-     * @author Andrei-Paul Ionescu
-     * @version 0.01
-     * @date 23.03.2022
-     */
-
-    switch(value){
-
-        case 0: return '0';
-        case 1: return '1';
-        case 2: return '2';
-        case 3: return '3';
-        case 4: return '4';
-        case 5: return '5';
-        case 6: return '6';
-        case 7: return '7';
-        case 8: return '8';
-        case 9: return '9';
-
-        default: ;
-    }
-
-    return 'E';
-}
-
-
 static int lengthOfString(const char *string){
     /**
      *
@@ -189,7 +156,76 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
      */
 
 
-    return (unbounded_int){};
+    if(first.sign == '-' && second.sign == '+'){
+
+        second.sign = '-';
+        return unbounded_int_sum(first, second);
+    }
+
+    if(first.sign == '+' && second.sign == '-'){
+
+        second.sign ='+';
+        return unbounded_int_sum(first, second);
+    }
+
+    long long int result = 0;
+
+    if(first.length >= second.length){
+
+
+        int lend = 0;
+        int position = 1;
+
+        digit *pointer_towards_digit_of_first_unbounded_int = first.last;
+        digit *pointer_towards_digit_of_second_unbounded_int  = second.last;
+
+        for(int index = 0 ; index < second.length; ++index){
+
+            if(pointer_towards_digit_of_first_unbounded_int->value >=
+            pointer_towards_digit_of_second_unbounded_int->value){
+
+
+                result += position * ((pointer_towards_digit_of_first_unbounded_int->value - lend) -
+                        pointer_towards_digit_of_second_unbounded_int->value);
+
+                lend = 0;
+            }
+            else{
+
+                lend = 1;
+
+                result += position * ((pointer_towards_digit_of_first_unbounded_int->value)*10 -
+                                      pointer_towards_digit_of_second_unbounded_int->value);
+            }
+
+            position *= 10;
+            pointer_towards_digit_of_first_unbounded_int = pointer_towards_digit_of_first_unbounded_int->next;
+            pointer_towards_digit_of_second_unbounded_int = pointer_towards_digit_of_second_unbounded_int->next;
+        }
+
+        for(size_t index = second.length ; index < first.length; ++index){
+
+            result += position * ((pointer_towards_digit_of_first_unbounded_int->value) - lend);
+
+
+            position *= 10;
+            lend = 0;
+
+            pointer_towards_digit_of_first_unbounded_int = pointer_towards_digit_of_first_unbounded_int->next;
+        }
+
+    } else{
+
+
+        int lend = 0;
+
+        for(int index = 0 ; index < first.length ; ++index){
+
+
+        }
+    }
+
+    return ll2unbounded_int(result);
 }
 unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
     /**
@@ -209,11 +245,16 @@ unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
     // Determine which number is the shortest and use its length so as to iterate thru the digits of the numbers so as
     // perform the addition operation.
 
-    // TODO: ACCOUNT FOR SIGN RULES WHEN ADDING TWO INTEGERS AND MAKE SURE THAT THE PROPER SIGN IS BEING STORED.
+    // TODO: Fix the subtract method's behaviour for thus far it is quite faulty.
 
-    if((first.sign == '+' && second.sign == '-') ||(first.sign == '-' && second.sign == '+')){
+    if(first.sign == '+' && second.sign == '-'){
 
         return unbounded_int_subtraction(first, second);
+    }
+
+    if(first.sign == '-' && second.sign == '+'){
+
+        return unbounded_int_subtraction(second, first);
     }
 
     digit *pointer_towards_digit_of_the_first_number = first.last;
@@ -471,18 +512,17 @@ unbounded_int ll2unbounded_int(long long int integer){
     } else{
 
         result->sign = '-';
+        integer *= -1;
     }
 
-    int length = 0;
 
     digit *head = malloc(sizeof(digit));
     if(head == NULL) abort();
 
-    head->next = NULL;
 
     while(integer > 0){
 
-        head->value = convertIntToChar((((int)integer)%10));
+        head->value = (char)((integer % 10) +'0');
         head->previous  = malloc(sizeof(digit));
         if(head->previous == NULL) abort();
 
@@ -491,23 +531,22 @@ unbounded_int ll2unbounded_int(long long int integer){
         head->next = temporary;
 
         integer /= 10;
-        length += 1;
+        result->length += 1;
     }
 
-    // Assign the length of the long long int to the unbounded_int object.
-    result->length = length;
 
     result->first = head->next;
     result->first->previous = NULL;
 
     digit *tail = result->first;
 
-    for(int index = 0 ; index < length - 1 ; ++index){
+    for(int index = 0 ; index < result->length - 1 ; ++index){
 
         tail = tail->next;
     }
 
     result->last = tail;
+    result->last->next = NULL;
     return *result;
 }
 
