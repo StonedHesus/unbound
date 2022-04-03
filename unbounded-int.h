@@ -38,7 +38,7 @@ int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second);
 unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second);
 unbounded_int ll2unbounded_int(long long int integer);
 unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second);
-void print_unbounded_int(unbounded_int unboundedInt, int direction);
+void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot);
 
 // Helper methods.
 static char convertIntToChar(int value){
@@ -128,7 +128,7 @@ static int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
-void print_unbounded_int(unbounded_int unboundedInt, int direction){
+void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot){
     /**
      *
      * @param1, an unbounded_int object.
@@ -151,6 +151,9 @@ void print_unbounded_int(unbounded_int unboundedInt, int direction){
 
         for(int index = 0 ; index < unboundedInt.length ; ++index){
 
+            if(flot != NULL)
+                fprintf(flot, "%c", pointer->value);
+
             printf("%c", pointer->value);
             pointer = pointer->next;
         }
@@ -161,6 +164,9 @@ void print_unbounded_int(unbounded_int unboundedInt, int direction){
         digit *pointer = unboundedInt.last;
 
         for(int index = unboundedInt.length ; index > 0 ; --index){
+
+            if(flot != NULL)
+                fprintf(flot, "%c", pointer->value);
 
             printf("%c", pointer->value);
             pointer = pointer->previous;
