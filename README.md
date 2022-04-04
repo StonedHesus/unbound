@@ -14,3 +14,16 @@ foo@example:~$ ./test
 ```
 
 **! Important**: We recommend using your terminal in fullscreen mode when running the test program, if by any chance your resolution does not allow the rendering of a visible output do redirect your attention to the file test-results.txt in which you will be able to find the same results only in a format which is bound to scale more nicely with your resolution to the magic of text-editors.
+
+In order to experience what the language has to offer you have to run the calc_unbounded_int executable which will then wait for you to input an input file and/or and output one, if one or all of the above are missing the program will revert to the standard input and out(stdin, stdout respectively).
+
+```shell
+This will open an interactive shell session, similar to the Python one.
+foo@example:~$ ./calc_unbound_int
+
+This will read from the file marked by the option -i and will output the results in the file marked by the option -o.
+foo@example:~$ ./calc_unbound_int -i test.ub -o test.out
+
+The output file is optional, and if omitted the program will output the result on the terminal.
+foo@example:~$ ./calc_unbound_int -i test.ub
+```
