@@ -1,10 +1,15 @@
 //
 // Created by Andrei Paul Ionescu on 26/03/2022.
 //
+
+/// Existing libraries.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <pthread.h>
+
+/// Custom libraries.
 #include "unbounded-int.h"
 #include "execution-stack.h"
 
@@ -28,9 +33,16 @@ static void print_round_robin(round_robin roundRobin);
 static int checkFileName(const char *filename);
 static int isFileName(const char *entity);
 static void readFile(const char *path);
+static void prepare(int count, char **args);
+static void run(void);
+static void read(void);
+static void write(void);
+static void parseLine(char *line);
 
 // Global variables of the program.
 static stack memory;
+static FILE *input;
+static FILE *output;
 
 int main(int count, char **args){
     /**
@@ -46,20 +58,23 @@ int main(int count, char **args){
      * @data 26.03.2022
      */
 
-    memory = create_execution_stack();
-    //readFile(args[1]);
-    stack my_stack = create_execution_stack();
+    prepare(count, args);
+    run();
 
-
-    add_back(&my_stack, "123");
- add_back(&my_stack, "321");
+//    memory = create_execution_stack();
+//    //readFile(args[1]);
+//    stack my_stack = create_execution_stack();
+//
+//
+//    add_back(&my_stack, "123");
+//     add_back(&my_stack, "321");
 //
 //
 //    print_stack(&my_stack, FRONTWARDS);
 //    printf("\n");
 //
-    print_unbounded_int(pop_front(&my_stack), 1);
-    printf("\n");
+//    print_unbounded_int(pop_front(&my_stack), 1);
+//    printf("\n");
 //    print_unbounded_int(pop_front(&my_stack), 1);
 
 
@@ -116,6 +131,99 @@ int main(int count, char **args){
 
 
 // Methods of the .c file.
+static void read(void){
+    /**
+     *
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 04.04.2022
+     * @version 0.01
+     * @location Home office.
+     */
+
+
+    if(input == stdin){
+
+        char *line = NULL;
+        size_t size = 0;
+        ssize_t read = 0;
+
+        while(1){
+
+            fprintf(output, ">>>");
+            read = getline(&line, &size, input);
+
+            if(strstr(line, "clear") || strstr(line, "clear()"))
+                system("clear");
+
+            if(read == -1 || strstr(line, "exit") != NULL || strstr(line, "exit()") != NULL){
+
+                fprintf(output, "\n");
+                exit(0);
+            }
+
+            parseLine(line);
+
+        }
+
+    }
+
+}
+
+static void write(void){
+    /**
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 04.04.2022
+     * @version 0.01
+     * @location Home Office.
+     */
+
+}
+
+static void run(void){
+    /**
+     *
+     *
+     * This here method manages the behaviour of the hole interpreter, thus it is dependent on whether or not the
+     * environment has been set out properly or not, therefore prior to calling run we strongly advise to use the
+     * prepare method.
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 04.04.2022
+     * @version 0.01
+     * @location Home office.
+     */
+
+    memory = create_execution_stack();
+    read();
+    write();
+}
+
+static void prepare(int count, char **args){
+    /**
+     *
+     * @param1, the number of pointers which are found in the list args.
+     * @param2, a list of pointers
+     *
+     * This method determines, based on the given input, whether the user of the program specified any particular input
+     * or output files or if any other options had been passed to the program, in which case the software is bound to
+     * respond according to the user's input or to warn him about fraudulent behaviour which it might cause.
+     *
+     * @author Andrei-Paul Ionescu
+     * @date 04.04.2022
+     * @version 0.01
+     * @location Home office.
+     */
+
+    if(count == 1){
+
+        input   = stdin;
+        output  = stdout;
+        return;
+    }
+}
+
 static void parseLine(char *line){
     /**
      *
@@ -136,8 +244,7 @@ static void parseLine(char *line){
 
        if(strcmp(token, "print") == 0){
 
-
-           print_unbounded_int(pop_front(&memory), 1);
+           print_unbounded_int(pop_front(&memory), 1, output);
            return;
         }
 

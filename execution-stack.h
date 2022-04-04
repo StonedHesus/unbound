@@ -72,7 +72,7 @@ void print_stack(stack *my_stack, int direction){
     if(direction == FRONTWARDS){
 
         for(stack *pointer = my_stack ; pointer != NULL ; pointer = pointer->next)
-            print_unbounded_int(pointer->unboundedInt, 1);
+            print_unbounded_int(pointer->unboundedInt, 1, NULL);
 
         printf("\n");
     }
