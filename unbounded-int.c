@@ -25,17 +25,6 @@ typedef struct digit{
 
 } digit;
 
-struct unbounded_int{
-
-    /// This here struct represents the list itself, with fields storing the head, tail and the sign of the integer
-    /// which is going to be stored with the aid of the structure.
-
-    char sign; // Either '+' or '-'.
-    size_t length; // The number of digits of our integer, the sign being independent from this.
-    digit *first; // Pointer to the header of the list aka our first value.
-    digit *last; // Pointer to the tail of the list aka our last value.
-
-};
 
 // Helper methods.
 static int lengthOfString(const char *string){

@@ -7,7 +7,19 @@
 #ifndef UNBOUNDED_INT_UNBOUNDED_INT_H
 #define UNBOUNDED_INT_UNBOUNDED_INT_H
 
-typedef struct unbounded_int *unbounded_int;
+typedef struct digit digit;
+
+typedef struct unbounded_int{
+
+    /// This here struct represents the list itself, with fields storing the head, tail and the sign of the integer
+    /// which is going to be stored with the aid of the structure.
+
+    char sign; // Either '+' or '-'.
+    size_t length; // The number of digits of our integer, the sign being independent from this.
+    digit *first; // Pointer to the header of the list aka our first value.
+    digit *last; // Pointer to the tail of the list aka our last value.
+
+} unbounded_int;
 
 extern unbounded_int string2unbounded_int(const char *e);
 extern int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second);
