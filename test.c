@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include "./unbounded-int.h"
+#include "unbounded-int.h"
 
 // Prototypes of the .c file.
 void print_separator(char separator);
