@@ -8,10 +8,11 @@
 #include <string.h>
 #include <assert.h>
 #include <pthread.h>
+#include <ctype.h>
 
 /// Custom libraries.
 #include "unbounded-int.h"
-#include "execution-stack.h"
+
 
 typedef struct command{
 
@@ -40,7 +41,6 @@ static void write(void);
 static void parseLine(char *line);
 
 // Global variables of the program.
-static stack memory;
 static FILE *input;
 static FILE *output;
 
@@ -195,7 +195,6 @@ static void run(void){
      * @location Home office.
      */
 
-    memory = create_execution_stack();
     read();
     write();
 }
@@ -244,13 +243,12 @@ static void parseLine(char *line){
 
        if(strcmp(token, "print") == 0){
 
-           print_unbounded_int(pop_front(&memory), 1, output);
            return;
         }
 
         if(assign == 1 && variable == 1){
 
-            add_back(&memory, token);
+
 
             assign   = 0;
             variable = 0;
