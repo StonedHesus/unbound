@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 
 #include "unbounded-int.h"
+#include "dictionary.h"
 
 // Prototypes of the .c file.
 void print_separator(char separator);
@@ -38,6 +39,26 @@ int main(void){
      */
 
     flot = fopen("test-results.txt", "w");
+
+    print_separator('#');
+    printf("\n# Tests for dictionary object:\n");
+    fprintf(flot, "\n# Tests for dictionary object:\n");
+
+    printf("\t[1] Creating a dictionary and adding the pair(\"my_first_variable\", 1234) where 1234 is an unbounded_int"
+           "object should cause no problem and thus no error\n\t    to be triggered if it does then there is some issue"
+           " with the code.\n");
+    fprintf(flot, "\t[1] Creating a dictionary and adding the pair(\"my_first_variable\", 1234) where 1234 is an unbounded_int"
+                  "object should cause no problem and thus no error to be triggered if it does then there is some issue "
+                  "with the code.\n");
+
+    dictionary my_dictionary = create_dictionary();
+    // TODO: FIX INSERT INTO DICTIONARY FUNCTION.
+    //insert_into_dictionary(my_dictionary, "my_first_variable", string2unbounded_int("1234"));
+
+    fclose(flot);
+
+
+    flot = fopen("test-results.txt", "a");
 
     print_separator('#');
     printf("\n# Tests for ll2unbounded_int:\n");

@@ -2,6 +2,13 @@
 // Created by Andrei Paul Ionescu on 26/03/2022.
 //
 
+/**
+ * This here .c file models the interpreter of the unbound programming language.
+ *
+ * @version 0.08
+ * @author Andrei-Paul Ionescu
+ */
+
 /// Existing libraries.
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,9 +17,16 @@
 #include <pthread.h>
 #include <ctype.h>
 
+
 /// Custom libraries.
 #include "unbounded-int.h"
 
+// Macro constants of the file.
+#define DEFAULT "\033[0m"
+#define GREEN "\033[32m"
+#define BOLD_GREEN "\033[1m\033[32m"
+#define RED "\033[31m"
+#define BOLD_RED "\033[1m\033[31m"
 
 typedef struct command{
 
@@ -37,12 +51,16 @@ static void readFile(const char *path);
 static void prepare(int count, char **args);
 static void run(void);
 static void read(void);
-static void write(void);
+static void write(char *line);
 static void parseLine(char *line);
+static char ** is_a_mathematical_expression(char *line);
+static char ** get_operands_of_expression(char *line);
+static int is_a_number(char *line);
 
 // Global variables of the program.
 static FILE *input;
 static FILE *output;
+static unsigned int line_number;
 
 int main(int count, char **args){
     /**
@@ -131,13 +149,115 @@ int main(int count, char **args){
 
 
 // Methods of the .c file.
+static int is_a_number(char *line){
+    /**
+     * @param line, a string object representing a line of text.
+     *
+     * Determine whether a string represents a digit or not.
+     *
+     * @since 0.07
+     * @version 0.01
+     * @author Andrei-Paul Ionescu
+     * @date 07.04.2022
+     * @location BU Grandes Moulines, forth floor.
+     */
+
+    for(char *pointer = line ; *pointer != '\0'; ++pointer){
+
+        if(isdigit(*pointer) == 0)
+            return 0;
+
+    }
+
+    return 1;
+}
+static char ** get_operands_of_expression(char *line){
+    /*
+     * @param line, a string object representing a line of text.
+     *
+     * @since 0.07
+     * @version final
+     * @author Andrei-Paul Ionescu
+     * @date 07.04.2022
+     * @location BU Grandes Moulines, forth floor.
+     */
+
+    char **operators = is_a_mathematical_expression(line);
+
+    if(operators == NULL) return NULL;
+
+    char **operands = malloc(sizeof(char **));
+    if(operands == NULL) abort();
+
+
+    return NULL;
+}
+
+static char **is_a_mathematical_expression(char *line){
+    /*
+     * @param line, a string object representing a line of text.
+     *
+     * Check whether the line contains a mathematical expression or not.
+     *
+     * If the line is a mathematical expression then return the operators it contains.
+     *
+     * @since 0.07
+     * @version final
+     * @author Andrei-Paul Ionescu
+     * @date 07.04.2022
+     * @location BU Grandes Moulines, forth floor.
+     */
+
+    assert(line);
+
+    char **result = malloc(sizeof(char **));
+    unsigned int position = 0;
+
+    if(result == NULL) abort();
+
+    for(const char* pointer = line ; *pointer !='\0' ; pointer += 1){
+
+        if(*pointer == '+'){
+
+            result[position] = malloc(sizeof(char *));
+            if(result[position] == NULL) abort();
+            result[position++] = "+";
+        }
+
+        if(*pointer == '-'){
+
+            result[position] = malloc(sizeof(char *));
+            if(result[position] == NULL) abort();
+            result[position++] = "-";
+        }
+
+        if(*pointer == '/'){
+
+            result[position] = malloc(sizeof(char *));
+            if(result[position] == NULL) abort();
+            result[position++] = "/";
+        }
+
+        if(*pointer == '*'){
+
+            result[position] = malloc(sizeof(char *));
+            if(result[position] == NULL) abort();
+            result[position++] = "*";
+        }
+    }
+
+    if(position == 0)
+        return NULL;
+    else
+        return result;
+}
 static void read(void){
     /**
      *
      *
      * @author Andrei-Paul Ionescu
      * @date 04.04.2022
-     * @version 0.01
+     * @version 0.02
      * @location Home office.
      */
 
@@ -150,8 +270,30 @@ static void read(void){
 
         while(1){
 
-            fprintf(output, ">>>");
+            fprintf(output, "%sIn [%s%d%s%s]: %s", GREEN, BOLD_GREEN, line_number, DEFAULT, GREEN, DEFAULT);
+            line_number += 1;
             read = getline(&line, &size, input);
+
+            /// TODO: DEBUG SO AS TO SEE WHY IT IS THAT STRINGS COMPRISED OF DIGITS ARE NOT PROPERLY LABELLED AS
+            ///  DIGITS, I DO BELIEVE IT HAS TO WITH THE ESCAPE CHARACTER WHICH line HAS.
+            // Line is not an assignment, hence it can either be a variable or a command.
+            if(!strstr(line, "=")){
+                // If the line is not an assignment then it might be an operation, a number or a command, either of
+                // these requires immediate output.
+
+                if(is_a_number(line) == 1){
+
+                    write(line);
+                } else{
+
+
+                    char **result = is_a_mathematical_expression(line);
+                    if(result == NULL)
+                        system(line);
+                    else
+                        write(line);
+                }
+            }
 
             if(strstr(line, "clear") || strstr(line, "clear()"))
                 system("clear");
@@ -162,6 +304,7 @@ static void read(void){
                 exit(0);
             }
 
+            fprintf(output, "\n");
             parseLine(line);
 
         }
@@ -170,7 +313,7 @@ static void read(void){
 
 }
 
-static void write(void){
+static void write(char *line){
     /**
      *
      * @author Andrei-Paul Ionescu
@@ -179,6 +322,10 @@ static void write(void){
      * @location Home Office.
      */
 
+    if(output == stdout){
+
+        fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, line);
+    }
 }
 
 static void run(void){
@@ -196,7 +343,8 @@ static void run(void){
      */
 
     read();
-    write();
+
+
 }
 
 static void prepare(int count, char **args){
