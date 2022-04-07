@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/**
+ *
+ * @version 0.08
+ * @author Andrei-Paul Ionescu
+ */
+
 
 
 /// Data structures utilised in the header.
@@ -81,6 +87,37 @@ static int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
+void destroy_unbounded_int(unbounded_int unboundedInt){
+    /**
+     * @param unboundedInt, an unbounded_int object.
+     *
+     * Liberate all the memory which is occupied by an unbounded_int object.
+     *
+     *
+     * @since 0.08
+     * @version 0.01
+     * @author Andrei-Paul Ionescu
+     * @date 07.04.2022
+     * @location in the car, on the way to university.
+     */
+
+    digit *pointer = unboundedInt.first;
+    digit *next;
+
+    for(int index = 0 ; index < unboundedInt.length ; ++index){
+
+        next = pointer->next;
+
+        free(pointer->next);
+        free(pointer->previous);
+        pointer = next;
+    }
+
+    free(unboundedInt.first);
+    free(unboundedInt.last);
+    free(&unboundedInt);
+}
+
 void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot){
     /**
      *

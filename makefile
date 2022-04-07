@@ -15,3 +15,7 @@ unbounded-int.o: unbounded-int.c unbounded-int.h
 calc_unbounded_int.o: calc_unbounded_int.c unbounded-int.h execution-stack.h
 test.o: test.c unbounded-int.h
 
+clean:
+	rm -rf *~
+cleanall:
+	rm  -rf *~  *.o  $(ALL)
