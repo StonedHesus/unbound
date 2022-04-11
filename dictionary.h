@@ -13,7 +13,7 @@ typedef struct dictionary *dictionary;
 extern dictionary create_dictionary(void);
 extern void destroy_dictionary(dictionary dictionary);
 extern void insert_into_dictionary(dictionary dictionary, const char *key, unbounded_int value);
-extern char *search_in_dictionary(dictionary dictionary, const char *key);
+extern unbounded_int *search_in_dictionary(dictionary dictionary, const char *key);
 extern void delete_from_dictionary(dictionary dictionary, const char *key);
 
 #endif //UNBOUNDED_INT_DICTIONARY_H

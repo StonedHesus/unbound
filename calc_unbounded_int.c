@@ -60,7 +60,7 @@ static int is_a_number(char *line);
 // Global variables of the program.
 static FILE *input;
 static FILE *output;
-static unsigned int line_number;
+static unsigned int line_number = 1;
 
 int main(int count, char **args){
     /**
@@ -273,6 +273,7 @@ static void read(void){
             fprintf(output, "%sIn [%s%d%s%s]: %s", GREEN, BOLD_GREEN, line_number, DEFAULT, GREEN, DEFAULT);
             line_number += 1;
             read = getline(&line, &size, input);
+
 
             /// TODO: DEBUG SO AS TO SEE WHY IT IS THAT STRINGS COMPRISED OF DIGITS ARE NOT PROPERLY LABELLED AS
             ///  DIGITS, I DO BELIEVE IT HAS TO WITH THE ESCAPE CHARACTER WHICH line HAS.

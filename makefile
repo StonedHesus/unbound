@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=		-g -pedantic
+CFLAGS=		-Wall -g -pedantic
 
 ALL= test calc_unbounded_int
 

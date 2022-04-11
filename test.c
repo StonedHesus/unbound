@@ -52,8 +52,19 @@ int main(void){
                   "with the code.\n");
 
     dictionary my_dictionary = create_dictionary();
-    // TODO: FIX INSERT INTO DICTIONARY FUNCTION.
-    //insert_into_dictionary(my_dictionary, "my_first_variable", string2unbounded_int("1234"));
+    insert_into_dictionary(my_dictionary, "my_first_variable", string2unbounded_int("1234"));
+
+    printf("\t[2] Searching for the newly added unbounded_int object, whose value is 1234 ought to yield that object"
+           "from within the dictionary.\n");
+    printf("\t\tTEST VALUE: ");
+
+    print_unbounded_int(*search_in_dictionary(my_dictionary, "my_first_variable"), 1, flot);
+
+    fprintf(flot, "\t[2] Searching for the newly added unbounded_int object, whose value is 1234 ought to yield that object"
+                  "from within the dictionary..\n");
+    fprintf(flot, "\t\tTEST VALUE: ");
+
+    print_new_line(1);
 
     fclose(flot);
 
