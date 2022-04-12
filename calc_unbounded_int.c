@@ -5,7 +5,7 @@
 /**
  * This here .c file models the interpreter of the unbound programming language.
  *
- * @version 0.09
+ * @version 0.10
  * @author Andrei-Paul Ionescu
  */
 
@@ -402,16 +402,24 @@ static void prepare(int count, char **args){
 
         output = stdout;
 
-        int file_already_exists = 0;
+        // TODO: SOLVE BUGS FOR MULTIPLE FILE INPUT.
+
+        int file_already_exists    = 0;
+        int process_already_exists = 0;
         for(int i = 1 ; i < count ; ++i){
 
-            write(args[i]);
-
-            if(isFileName(args[i])){
+            if(isFileName(args[i]) == 1){
 
                 if(file_already_exists == 0){
 
-                    current_process = new_command(args[i]);
+                    if(process_already_exists == 0){
+
+                        current_process = new_command(args[i]);
+                        add_target(&current_process, args[i]);
+                    } else{
+
+                        add_target(&current_process, args[i]);
+                    }
                     file_already_exists = 1;
                 } else{
 
@@ -420,9 +428,19 @@ static void prepare(int count, char **args){
                 }
             } else{
 
-                add_option(current_process, args[i]);
+                if(process_already_exists == 0){
+
+                    current_process = new_empty_command();
+                    add_option(&current_process, args[i]);
+                    process_already_exists = 1;
+                } else{
+
+                    add_option(&current_process, args[i]);
+                }
             }
         }
+
+
 
         print_command(current_process);
     }
@@ -521,10 +539,15 @@ static int isFileName(const char *entity){
      * @date 28.03.2022
      * @version 0.02
      */
+    assert(entity);
+
+    if(!strstr(entity, ".")) return  0;
 
     int times = 0;
 
     char *result = strtok(strdup(entity), ".");
+
+    if(result == NULL) return 0;
 
     while(result){
 

@@ -2,7 +2,7 @@
 // Created by Andrei-Paul Ionescu on 11/04/2022.
 //
 
-/// VERSION 0.03
+/// VERSION 0.04
 
 // C libraries.
 #include <stdio.h>
@@ -15,7 +15,53 @@
 #define OPTIONS_BUFFER_SIZE 1024
 
 // Method of the library.
-void add_option(command existing_command, char * option){
+void add_target(command *existing_command, char *target){
+    /**
+     * @param existing_command; an existing command object which is going to be mutated.
+     * @param target; a string object representing the target file.
+     *
+     * Mutate the existing_command object so that it contains the target file.
+     *
+     * @since 0.03
+     * @version final
+     * @author Andrei-Paul Ionescu
+     * @location Crous cafeteria, Grands Moulines.
+     */
+
+    existing_command->target = target;
+}
+
+command new_empty_command(){
+    /**
+     *
+     * Create a new and empty command object and return it to the caller.
+     *
+     * @since 0.04
+     * @version final
+     * @author Andrei-Paul Ionescu
+     * @location Crous cafeteria, Grands Moulines.
+     */
+
+    command *new_command = malloc(sizeof(command));
+
+    if(new_command == NULL){
+
+        printf("\nInitialisation ERROR: There has been an error with the initialisation of the command object!\n");
+        abort();
+    }
+
+    new_command->number_of_options = 0;
+    new_command->options = malloc(sizeof(new_command->options) * OPTIONS_BUFFER_SIZE);
+
+    if(new_command->options == NULL){
+
+        printf("\nInitialisation ERROR: There has been an error with the initialisation of the command object!\n");
+        abort();
+    }
+
+    return *new_command;
+}
+void add_option(command *existing_command, char * option){
     /**
      * @param existing_command; an existing command object whose going to be mutated.
      * @param option; a string object containing one sole option which is going to be added to the options list of
@@ -29,7 +75,7 @@ void add_option(command existing_command, char * option){
      * @location Crous cafeteria, Grands Moulines.
      */
 
-    existing_command.options[existing_command.number_of_options++] = option;
+    existing_command->options[existing_command->number_of_options++] = option;
 }
 
 command new_command(const char* target){
@@ -147,7 +193,7 @@ void print_command(command command){
 
     for(int i = 0 ; i < command.number_of_options; ++i){
 
-        printf("%s", command.options[i]);
+        printf("%s ", command.options[i]);
     }
     printf("\n");
 }

@@ -29,6 +29,9 @@ extern round_robin create_round_robin();
 extern void add_process(round_robin current_roundRobin,command new_process);
 extern void move_pointer(round_robin current_roundRobin);
 extern command new_command(const char* target);
-extern void add_option(command existing_command, char * option);
+extern command new_empty_command();
+extern void add_option(command *existing_command, char * option);
+extern void add_target(command *existing_command, char *target);
+
 
 #endif //UNBOUNDED_INT_INPUT_MANAGER_H
