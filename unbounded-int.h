@@ -28,5 +28,6 @@ extern unbounded_int ll2unbounded_int(long long int integer);
 extern unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second);
 extern void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot);
 extern void destroy_unbounded_int(unbounded_int unboundedInt);
+extern char *unbounded_int2string(unbounded_int unboundedInt);
 
 #endif //UNBOUNDED_INT_UNBOUNDED_INT_H

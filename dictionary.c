@@ -219,8 +219,9 @@ void insert_into_dictionary(dictionary dictionary, const char *key, unbounded_in
      * @location in the car, on the way to university.
      */
 
-
-    assert(key != NULL && value.sign != '*');
+    //&& value.sign != '*'
+    // FIX ERROR WITH string2unbound_int method.
+    assert(key != NULL );
 
     element *temporary;
     unsigned long hash_value;

@@ -5,7 +5,7 @@
 /**
  * This here .c file models the interpreter of the unbound programming language.
  *
- * @version 0.08
+ * @version 0.09
  * @author Andrei-Paul Ionescu
  */
 
@@ -20,6 +20,8 @@
 
 /// Custom libraries.
 #include "unbounded-int.h"
+#include "dictionary.h"
+#include "input-manager.h"
 
 // Macro constants of the file.
 #define DEFAULT "\033[0m"
@@ -28,24 +30,11 @@
 #define RED "\033[31m"
 #define BOLD_RED "\033[1m\033[31m"
 
-typedef struct command{
-
-    const char **options;
-    const char *target;
-} command;
-
-typedef struct round_robin{
-
-    struct round_robin *next;
-    command *command;
-    struct round_robin *previous;
-} round_robin;
 
 
 // Prototypes of the function used inside this here .c file.
-static void print_command(command command);
-static void print_round_robin(round_robin roundRobin);
-static int checkFileName(const char *filename);
+
+static int checkForInputFile(const char *filename);
 static int isFileName(const char *entity);
 static void readFile(const char *path);
 static void prepare(int count, char **args);
@@ -56,11 +45,13 @@ static void parseLine(char *line);
 static char ** is_a_mathematical_expression(char *line);
 static char ** get_operands_of_expression(char *line);
 static int is_a_number(char *line);
+static int checkForOutputFile(const char *filename);
 
 // Global variables of the program.
 static FILE *input;
 static FILE *output;
 static unsigned int line_number = 1;
+static dictionary memory;
 
 int main(int count, char **args){
     /**
@@ -79,7 +70,6 @@ int main(int count, char **args){
     prepare(count, args);
     run();
 
-//    memory = create_execution_stack();
 //    //readFile(args[1]);
 //    stack my_stack = create_execution_stack();
 //
@@ -278,9 +268,32 @@ static void read(void){
             /// TODO: DEBUG SO AS TO SEE WHY IT IS THAT STRINGS COMPRISED OF DIGITS ARE NOT PROPERLY LABELLED AS
             ///  DIGITS, I DO BELIEVE IT HAS TO WITH THE ESCAPE CHARACTER WHICH line HAS.
             // Line is not an assignment, hence it can either be a variable or a command.
+
+            if(strstr(line, "print") != NULL){
+
+
+                // TODO: FIX THE SEGMENTATION ERROR WHICH IS PRESENT HERE.
+                char * variable;
+                char *tokens = strtok(line, " ");
+                variable = tokens;
+
+                char *key = strtok(NULL, " ");
+                strcat(key, "\0");
+                char * query = unbounded_int2string(*search_in_dictionary(memory, key));
+
+                if(query == NULL){
+
+                    printf("ERROR: The variable %s was not defined!", variable);
+                } else
+                    print_unbounded_int(*search_in_dictionary(memory, key), 1, NULL);
+//                    write(query);
+            }
+
+
             if(!strstr(line, "=")){
                 // If the line is not an assignment then it might be an operation, a number or a command, either of
                 // these requires immediate output.
+
 
                 if(is_a_number(line) == 1){
 
@@ -294,7 +307,18 @@ static void read(void){
                     else
                         write(line);
                 }
+            } else{
+
+                char *token = strtok(line, "=");
+
+                insert_into_dictionary(memory, token, string2unbounded_int(strtok(NULL, "=")));
+
             }
+
+            if(strstr(line, "cd"))
+                //chdir(line);
+                // Solve conflict between the library which contains the chdir command and the method implemented
+                // by the interpreter.
 
             if(strstr(line, "clear") || strstr(line, "clear()"))
                 system("clear");
@@ -343,6 +367,7 @@ static void run(void){
      * @location Home office.
      */
 
+    memory = create_dictionary();
     read();
 
 
@@ -369,7 +394,40 @@ static void prepare(int count, char **args){
         input   = stdin;
         output  = stdout;
         return;
+    } else{
+        // Commence the round-robin algorithm.
+
+        round_robin roundRobin = create_round_robin();
+        command current_process;
+
+        output = stdout;
+
+        int file_already_exists = 0;
+        for(int i = 1 ; i < count ; ++i){
+
+            write(args[i]);
+
+            if(isFileName(args[i])){
+
+                if(file_already_exists == 0){
+
+                    current_process = new_command(args[i]);
+                    file_already_exists = 1;
+                } else{
+
+                    add_process(roundRobin, current_process);
+                    file_already_exists = 0;
+                }
+            } else{
+
+                add_option(current_process, args[i]);
+            }
+        }
+
+        print_command(current_process);
     }
+
+
 }
 
 static void parseLine(char *line){
@@ -479,9 +537,36 @@ static int isFileName(const char *entity){
         return 1;
 }
 
-static int checkFileName(const char *filename){
+static int checkForOutputFile(const char *filename){
     /**
-     * @param filename, a const char( string object whose values we cannot alter) which represents the name of
+     * @param filename; a string object which represents the name of a possible output file.
+     *
+     * This here method determines whether or not the file name passed to the method is a valid output file or not,
+     * valid output files end with the extensions .txt, .out.
+     *
+     * @since 0.09
+     * @version final
+     * @author Andrei-Paul Ionescu
+     * @location Crous cafeteria Grands Moulines.
+     */
+
+    assert(filename != NULL);
+
+    const char *first_result  = strstr(filename, ".txt");
+    const char *second_result = strstr(filename, ".out");
+
+    if(!first_result && !second_result){
+
+        printf("File format error: all output files must bear the extensions .txt or .out.\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+static int checkForInputFile(const char *filename){
+    /**
+     * @param filename; a const char( string object whose values we cannot alter) which represents the name of
      * a possible input file.
      *
      * This here method determines whether or not the input file passed to the interpret ends with one of the
@@ -506,21 +591,4 @@ static int checkFileName(const char *filename){
     return 1;
 }
 
-static void print_round_robin(round_robin roundRobin){
 
-    round_robin *current = &roundRobin;
-
-    do{
-
-        print_command(*current->command);
-        current = current->next;
-    }while(current != &roundRobin);
-}
-
-static void print_command(command command){
-
-    for(const char *option = command.options[0]; option != NULL ; option += 1){
-
-        printf("%s", option);
-    }
-}
