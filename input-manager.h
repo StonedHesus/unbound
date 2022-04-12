@@ -26,7 +26,7 @@ struct round_robin{
 extern void print_command(command command);
 extern void print_round_robin(round_robin roundRobin);
 extern round_robin create_round_robin();
-extern void add_process(round_robin current_roundRobin,command new_process);
+extern void add_process(round_robin *current_roundRobin,command new_process);
 extern void move_pointer(round_robin current_roundRobin);
 extern command new_command(const char* target);
 extern command new_empty_command();

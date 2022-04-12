@@ -402,7 +402,8 @@ static void prepare(int count, char **args){
 
         output = stdout;
 
-        // TODO: SOLVE BUGS FOR MULTIPLE FILE INPUT.
+        // TODO: finish implementing the add_process method and correct the print_round_robin one.
+
 
         int file_already_exists    = 0;
         int process_already_exists = 0;
@@ -415,7 +416,7 @@ static void prepare(int count, char **args){
                     if(process_already_exists == 0){
 
                         current_process = new_command(args[i]);
-                        add_target(&current_process, args[i]);
+                        process_already_exists = 1;
                     } else{
 
                         add_target(&current_process, args[i]);
@@ -423,9 +424,13 @@ static void prepare(int count, char **args){
                     file_already_exists = 1;
                 } else{
 
-                    add_process(roundRobin, current_process);
+                    add_process(&roundRobin, current_process);
+
+                    current_process = new_empty_command();
                     file_already_exists = 0;
+                    process_already_exists = 1;
                 }
+
             } else{
 
                 if(process_already_exists == 0){
@@ -441,8 +446,8 @@ static void prepare(int count, char **args){
         }
 
 
-
-        print_command(current_process);
+        print_round_robin(roundRobin);
+        //print_command(current_process);
     }
 
 

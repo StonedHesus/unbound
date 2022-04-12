@@ -111,7 +111,7 @@ command new_command(const char* target){
     return *temporary;
 }
 
-void add_process(round_robin current_roundRobin, command new_process){
+void add_process(round_robin *current_roundRobin, command new_process){
     /**
      * @param current_roundRobin; the current round_robin object.
      * @param new_process; a new process which is bound to added in the round_robin.
@@ -124,6 +124,12 @@ void add_process(round_robin current_roundRobin, command new_process){
      * @location RER B, on the way home.
      */
 
+    if(current_roundRobin->next == NULL && current_roundRobin->previous == NULL){
+        // The Round Robin is empty.
+
+        current_roundRobin->command = &new_process;
+        current_roundRobin->next = current_roundRobin->previous = current_roundRobin;
+    }
 
 
 }
@@ -162,8 +168,8 @@ round_robin create_round_robin(){
         abort();
     }
 
-    roundRobin->next = roundRobin;
-    roundRobin->previous = roundRobin;
+    roundRobin->next = NULL;
+    roundRobin->previous = NULL;
 
     roundRobin->command = malloc(sizeof(command));
 
