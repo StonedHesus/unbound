@@ -257,43 +257,51 @@ static void read(void){
         char *line = NULL;
         size_t size = 0;
         ssize_t read = 0;
+        int beginning = 0;
 
         while(1){
+
+            if(beginning == 0){
+
+                fprintf(output, "Unbound 0.0.10 (default, 13th April 2022, 15:33:49)\n");
+                fprintf(output, "calc_unbound -- An enhanced unbound shell; type '?' for help.\n\n");
+
+                beginning = 1;
+            }
 
             fprintf(output, "%sIn [%s%d%s%s]: %s", GREEN, BOLD_GREEN, line_number, DEFAULT, GREEN, DEFAULT);
             line_number += 1;
             read = getline(&line, &size, input);
 
-
-            /// TODO: DEBUG SO AS TO SEE WHY IT IS THAT STRINGS COMPRISED OF DIGITS ARE NOT PROPERLY LABELLED AS
-            ///  DIGITS, I DO BELIEVE IT HAS TO WITH THE ESCAPE CHARACTER WHICH line HAS.
             // Line is not an assignment, hence it can either be a variable or a command.
-
             if(strstr(line, "print") != NULL){
 
+                strtok(line, " ");
+                char * variable = strtok(NULL, " ");
 
-                // TODO: FIX THE SEGMENTATION ERROR WHICH IS PRESENT HERE.
-                char * variable;
-                char *tokens = strtok(line, " ");
-                variable = tokens;
+                char *pointer = variable;
 
-                char *key = strtok(NULL, " ");
-                strcat(key, "\0");
-                char * query = unbounded_int2string(*search_in_dictionary(memory, key));
+                is_a_mathematical_expression(variable);
+                while(*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
+                    // Remove extra spaces from the suffix of the handle.
+                    pointer += 1;
 
-                if(query == NULL){
+                // Add the string terminator.
+                *pointer = '\0';
 
-                    printf("ERROR: The variable %s was not defined!", variable);
-                } else
-                    print_unbounded_int(*search_in_dictionary(memory, key), 1, NULL);
-//                    write(query);
+                if(search_in_dictionary(memory, variable) == 0){
+
+                    printf("ERROR: The variable %s was not defined!\n", variable);
+                } else{
+
+                    write(unbounded_int2string(*search_in_dictionary(memory, variable)));
+                }
             }
 
 
             if(!strstr(line, "=")){
                 // If the line is not an assignment then it might be an operation, a number or a command, either of
                 // these requires immediate output.
-
 
                 if(is_a_number(line) == 1){
 
@@ -309,10 +317,26 @@ static void read(void){
                 }
             } else{
 
-                char *token = strtok(line, "=");
+                char *key = strtok(line, "=");
+                char *pointer = key;
 
-                insert_into_dictionary(memory, token, string2unbounded_int(strtok(NULL, "=")));
+                while(*pointer != ' ')
+                   pointer += 1;
 
+                *pointer = '\0';
+
+                char *value = strtok(NULL, " ");
+
+                pointer = value;
+
+                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    pointer += 1;
+
+
+
+                *pointer = '\0';
+
+                insert_into_dictionary(memory, key, string2unbounded_int(value));
             }
 
             if(strstr(line, "cd"))
@@ -329,9 +353,17 @@ static void read(void){
                 exit(0);
             }
 
+            if(strstr(line, "?")){
+                system("clear");
+                fprintf(output, "calc_unbound -- An enhanced unbound shell\n");
+                fprintf(output, "=========================================\n\n");
+                fprintf(output, "calc_unbound offers an interpreter with convenient shell features for the unbound "
+                                "language.\n");
+
+            }
+
             fprintf(output, "\n");
             parseLine(line);
-
         }
 
     }
@@ -377,7 +409,7 @@ static void prepare(int count, char **args){
     /**
      *
      * @param1, the number of pointers which are found in the list args.
-     * @param2, a list of pointers
+     * @param2, a list of pointers.
      *
      * This method determines, based on the given input, whether the user of the program specified any particular input
      * or output files or if any other options had been passed to the program, in which case the software is bound to
@@ -446,8 +478,8 @@ static void prepare(int count, char **args){
         }
 
 
-        print_round_robin(roundRobin);
-        //print_command(current_process);
+        //print_round_robin(roundRobin);
+        print_command(current_process);
     }
 
 
