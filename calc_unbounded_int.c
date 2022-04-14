@@ -16,6 +16,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <ctype.h>
+#include <errno.h>
 
 
 /// Custom libraries.
@@ -339,6 +340,21 @@ static void read(void){
                 insert_into_dictionary(memory, key, string2unbounded_int(value));
             }
 
+            if(strstr(line, "len")){
+                // Return the number of digits of the variable.
+
+                strtok(line, " ");
+                char *value = strtok(NULL, " ");
+                char *pointer = value;
+
+                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    pointer += 1;
+
+                *pointer = '\0';
+
+
+            }
+
             if(strstr(line, "cd"))
                 //chdir(line);
                 // Solve conflict between the library which contains the chdir command and the method implemented
@@ -369,6 +385,8 @@ static void read(void){
     }
 
 }
+
+// TODO: Make write behaves like printf.
 
 static void write(char *line){
     /**
