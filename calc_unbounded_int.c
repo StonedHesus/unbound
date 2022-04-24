@@ -5,7 +5,7 @@
 /**
  * This here .c file models the interpreter of the unbound programming language.
  *
- * @version 0.10
+ * @version 0.11
  * @author Andrei-Paul Ionescu
  */
 
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include <pthread.h>
+#include <stdarg.h>
 #include <ctype.h>
 #include <errno.h>
 
@@ -41,12 +41,13 @@ static void readFile(const char *path);
 static void prepare(int count, char **args);
 static void run(void);
 static void read(void);
-static void write(char *line);
+static void write(char *line, ...);
 static void parseLine(char *line);
 static char ** is_a_mathematical_expression(char *line);
 static char ** get_operands_of_expression(char *line);
 static int is_a_number(char *line);
 static int checkForOutputFile(const char *filename);
+static int is_a_valid_variable_name(const char *variable_name);
 
 // Global variables of the program.
 static FILE *input;
@@ -68,6 +69,8 @@ int main(int count, char **args){
      * @data 26.03.2022
      */
 
+
+    /// TODO: ALTER THE WAY IN WHICH INPUT IS READ FROM THE TERMINAL FOR THE CURRENT APPROACH IS UNSAFE AND FRAUDULENT.
     prepare(count, args);
     run();
 
@@ -140,6 +143,20 @@ int main(int count, char **args){
 
 
 // Methods of the .c file.
+static int is_a_valid_variable_name(const char *variable_name){
+
+    assert(variable_name);
+
+    if(isdigit(*variable_name)) return 0;
+//
+//    for(const char * pointer = variable_name ; pointer ; pointer += 1){
+//  Check for language syntax.
+//
+//    }
+
+    return 1;
+}
+
 static int is_a_number(char *line){
     /**
      * @param line, a string object representing a line of text.
@@ -326,6 +343,12 @@ static void read(void){
 
                 *pointer = '\0';
 
+                if(is_a_valid_variable_name(key) == 0){
+
+                    fprintf(output, "\nERROR: Incorrect variable name!\n");
+                    goto END;
+                }
+
                 char *value = strtok(NULL, " ");
 
                 pointer = value;
@@ -352,7 +375,7 @@ static void read(void){
 
                 *pointer = '\0';
 
-
+                write("%d", search_in_dictionary(memory, value)->length);
             }
 
             if(strstr(line, "cd"))
@@ -378,6 +401,8 @@ static void read(void){
 
             }
 
+            END:
+
             fprintf(output, "\n");
             parseLine(line);
         }
@@ -386,9 +411,7 @@ static void read(void){
 
 }
 
-// TODO: Make write behaves like printf.
-
-static void write(char *line){
+static void write(char *line, ...){
     /**
      *
      * @author Andrei-Paul Ionescu
@@ -397,9 +420,59 @@ static void write(char *line){
      * @location Home Office.
      */
 
+    assert(line);
+
+    // Prepare the string for output.
+    va_list vaList;
+    va_start(vaList, line);
+
+    char buffer[10000] = {0};
+    char temporary[1000];
+
+    int i = 0, j = 0;
+
+    while(line && line[i]){
+
+        if(line[i] == '%')
+        {
+            i++;
+            switch(line[i])
+            {
+                case 'c':
+                {
+                    buffer[j] = (char)va_arg(vaList, int);
+                    j++;
+                    break;
+                }
+                case 'd':
+                {
+                    snprintf(temporary,sizeof(temporary),"%d",va_arg(vaList, int));
+                    //itoa(va_arg(vaList, int), temporary, 10);
+                    strcpy(&buffer[j], temporary);
+                    j += strlen(temporary);
+                    break;
+                }
+                case 'x':
+                {
+                    snprintf(temporary,sizeof(temporary),"%x",va_arg(vaList, int));
+                    //itoa(va_arg(vaList, int), temporary, 16);
+                    strcpy(&buffer[j], temporary);
+                    j += strlen(temporary);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            buffer[j] = line[i];
+            j++;
+        }
+        i++;
+    }
+
     if(output == stdout){
 
-        fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, line);
+        fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, buffer);
     }
 }
 

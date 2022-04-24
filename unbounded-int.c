@@ -9,10 +9,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 /**
  *
- * @version 0.08
+ * @version 0.0.9
  * @author Andrei-Paul Ionescu
  */
 
@@ -69,7 +70,7 @@ static int containsOnlyDigits(const char *string){
      * digits, any other character within the string will cause the string to be labelled as invalid.
      *
      * @author Andrei-Paul Ionescu
-     * @version 0.01
+     * @version 0.0.1
      * @date 23.03.2022
      */
 
@@ -87,15 +88,42 @@ static int containsOnlyDigits(const char *string){
 }
 
 // Methods of the header.
+unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int second){
+    /**
+     * @param first; an unbounded_int object.
+     * @param second; an unbounded_int object.
+     *
+     *  This method performs the multiplication of the two unbounded_int objects and returns their result.
+     *
+     *  @since 0.0.9
+     *  @version 0.0.1
+     *  @author Andrei-Paul Ionescu
+     *  @location Home office.
+     */
+
+    assert(first.sign != '*' && second.sign != '*');
+
+    /// TODO: Solve the weird behaviour behind this test, hint: it might have to do with compare function.
+    if(unbounded_int_cmp_unbounded_int(first, string2unbounded_int("0")) == 0
+    || unbounded_int_cmp_unbounded_int(second, string2unbounded_int("0")) == 0)
+        return string2unbounded_int("0");
+    else {
+        // Basic multiplication algorithm goes here.
+    }
+
+    return (unbounded_int){};
+}
+
+
 void destroy_unbounded_int(unbounded_int unboundedInt){
     /**
-     * @param unboundedInt, an unbounded_int object.
+     * @param unboundedInt; an unbounded_int object.
      *
      * Liberate all the memory which is occupied by an unbounded_int object.
      *
      *
-     * @since 0.08
-     * @version 0.01
+     * @since 0.0.8
+     * @version 0.0.1
      * @author Andrei-Paul Ionescu
      * @date 07.04.2022
      * @location in the car, on the way to university.
@@ -164,7 +192,10 @@ void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot){
     }
 
 }
-unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second){
+
+/// TODO: Fix the tossing around of values between the subtraction method and addition one.
+
+unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second, ...){
     /**
      *
      * @param1 first, an unbounded_int.
@@ -178,6 +209,11 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
      * @version 28.03.2022
      */
 
+    va_list vaList;
+
+    int calledFromAPreviousMethod = va_arg(vaList, int);
+
+    if (calledFromAPreviousMethod != 1){
 
     if(first.sign == '-' && second.sign == '+'){
 
@@ -190,6 +226,9 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
         second.sign ='+';
         return unbounded_int_sum(first, second);
     }
+
+    }
+
 
     long long int result = 0;
 
@@ -272,12 +311,12 @@ unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
 
     if(first.sign == '+' && second.sign == '-'){
 
-        return unbounded_int_subtraction(first, second);
+        return unbounded_int_subtraction(first, second, 1);
     }
 
     if(first.sign == '-' && second.sign == '+'){
 
-        return unbounded_int_subtraction(second, first);
+        return unbounded_int_subtraction(second, first, 1);
     }
 
     digit *pointer_towards_digit_of_the_first_number = first.last;

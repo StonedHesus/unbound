@@ -10,6 +10,11 @@
 #include "unbounded-int.h"
 #include "dictionary.h"
 
+// Macro constants.
+
+#define BOLD_TEXT "\033[1m"
+#define NORMAL_TEXT "\033[0m"
+
 // Prototypes of the .c file.
 void print_separator(char separator);
 void print_new_line(int times);
@@ -198,99 +203,143 @@ int main(void){
 
     fclose(flot);
 
+//    flot = fopen("test-results.txt", "a");
+//
+//    printf("# Tests for unbounded_int_sum:\n");
+//    fprintf(flot, "# Tests for unbounded_int_sum:\n");
+//
+//    printf("\t [1] Adding two unbounded_int of the same size and same sign.\n");
+//    fprintf(flot, "\t [1] Adding two unbounded_int of the same size and same sign.\n");
+//
+//    printf("\t\t[i] Given the values 1234 and 1866 the result ought to be 3100.\n");
+//    fprintf(flot, "\t\t[i] Given the values 1234 and 1866 the result ought to be 3100.\n");
+//
+//    printf("\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\t\t\tTEST VALUE: ");
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("1234"),
+//                                          string2unbounded_int("1866")),1, flot);
+//
+//    print_new_line(1);
+//    printf("\t\t[ii] Given the values -1234 and -1866 the result ought to be -3100.\n");
+//    fprintf(flot, "\t\t[ii] Given the values -1234 and -1866 the result ought to be -3100.\n");
+//
+//    printf("\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\t\t\tTEST VALUE: ");
+//
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-1234"),
+//                                          string2unbounded_int("-1866")),1, flot);
+//
+//    print_new_line(1);
+//
+//    printf("\t [2] Adding two unbounded_int of the same size and different sign.\n");
+//    fprintf(flot, "\t [2] Adding two unbounded_int of the same size and different sign.\n");
+//
+//    printf("\t\t[i] Given the values 123 and -123 the program ought to yield the value 0.");
+//    fprintf(flot, "\t\t[i] Given the values 123 and -123 the program ought to yield the value 0.");
+//
+//    printf("\n\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\n\t\t\tTEST VALUE: ");
+//
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("123"),
+//                                          string2unbounded_int("-123")) ,1, flot);
+//
+//
+//    printf("\n\t\t[ii] Given the values -123 and 123 the program ought to yield the value 0.");
+//    fprintf(flot, "\n\t\t[ii] Given the values -123 and 123 the program ought to yield the value 0.");
+//
+//    printf("\n\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\n\t\t\tTEST VALUE: ");
+//
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
+//                                          string2unbounded_int("123")) ,1, flot);
+//
+//    printf("\n\t\t[iii] Given the values -123 and 120 the program ought to yield the value -3.");
+//    fprintf(flot, "\n\t\t[iii] Given the values -123 and 120 the program ought to yield the value -3.");
+//
+//    printf("\n\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\n\t\t\tTEST VALUE: ");
+//
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
+//                                          string2unbounded_int("120")) ,1, flot);
+//
+//    printf("\n\t\t[ii] Given the values 120 and -123 the program ought to yield the value -3.");
+//    fprintf(flot, "\n\t\t[ii] Given the values 120 and -123 the program ought to yield the value -3.");
+//
+//    printf("\n\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\n\t\t\tTEST VALUE: ");
+//
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("120"),
+//                                          string2unbounded_int("-123")) ,1, flot);
+//
+//    print_new_line(2);
+//
+//    printf("\t [3] Adding two unbounded_int of the different size and signs which can be different or not.\n");
+//    fprintf(flot, "\t [3] Adding two unbounded_int of the different size and signs which can be different or not.\n");
+//
+//    printf("\t\t[i] Given the values 123 and 0 the result ought to be 123. "
+//           "\n\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\t\t[i] Given the values 123 and 0 the result ought to be 123. "
+//           "\n\t\t\tTEST VALUE: ");
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("123"),
+//                                          string2unbounded_int("0")), 1, flot);
+//    print_new_line(1);
+//
+//    printf("\n\t\t[ii] Given the values -123 and 0 the result ought to be -123.\n");
+//    fprintf(flot, "\n\t\t[ii] Given the values -123 and 0 the result ought to be -123.\n");
+//
+//    printf("\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\t\t\tTEST VALUE: ");
+//    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
+//                                          string2unbounded_int("0")), 1, flot);
+//
+//    print_new_line(1);
+//    print_separator('#');
+//
+//    fclose(flot);
+
     flot = fopen("test-results.txt", "a");
 
-    printf("# Tests for unbounded_int_sum:\n");
-    fprintf(flot, "# Tests for unbounded_int_sum:\n");
+    printf("%s# Tests for unbounded_int_multiplication:\n%s", BOLD_TEXT, NORMAL_TEXT);
+    fprintf(flot, "# Tests for unbounded_int_multiplication:\n");
 
-    printf("\t [1] Adding two unbounded_int of the same size and same sign.\n");
-    fprintf(flot, "\t [1] Adding two unbounded_int of the same size and same sign.\n");
+    printf("\t[1] Multiplying a number by zero will yield zero as a result.\n");
+    fprintf(flot, "\t[1] Multiplying a number by zero will yield zero as a result.\n");
 
-    printf("\t\t[i] Given the values 1234 and 1866 the result ought to be 3100.\n");
-    fprintf(flot, "\t\t[i] Given the values 1234 and 1866 the result ought to be 3100.\n");
+    printf("\t\t\tTEST VALUES : ");
+    fprintf(flot, "\t\t\tTEST VALUES: ");
+    print_unbounded_int(unbounded_int_multiplication(string2unbounded_int("12345"),
+                                                     string2unbounded_int("0")), 0, flot);
 
-    printf("\t\t\tTEST VALUE: ");
-    fprintf(flot, "\t\t\tTEST VALUE: ");
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("1234"),
-                                          string2unbounded_int("1866")),1, flot);
+    printf(", ");
+    fprintf(flot, ", ");
 
-    print_new_line(1);
-    printf("\t\t[ii] Given the values -1234 and -1866 the result ought to be -3100.\n");
-    fprintf(flot, "\t\t[ii] Given the values -1234 and -1866 the result ought to be -3100.\n");
+    print_unbounded_int(unbounded_int_multiplication(string2unbounded_int("0"),
+                                                     string2unbounded_int("-12345")), 0, flot);
 
-    printf("\t\t\tTEST VALUE: ");
-    fprintf(flot, "\t\t\tTEST VALUE: ");
-
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-1234"),
-                                          string2unbounded_int("-1866")),1, flot);
-
-    print_new_line(1);
-
-    printf("\t [2] Adding two unbounded_int of the same size and different sign.\n");
-    fprintf(flot, "\t [2] Adding two unbounded_int of the same size and different sign.\n");
-
-    printf("\t\t[i] Given the values 123 and -123 the program ought to yield the value 0.");
-    fprintf(flot, "\t\t[i] Given the values 123 and -123 the program ought to yield the value 0.");
-
-    printf("\n\t\t\tTEST VALUE: ");
-    fprintf(flot, "\n\t\t\tTEST VALUE: ");
-
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("123"),
-                                          string2unbounded_int("-123")) ,1, flot);
-
-
-    printf("\n\t\t[ii] Given the values -123 and 123 the program ought to yield the value 0.");
-    fprintf(flot, "\n\t\t[ii] Given the values -123 and 123 the program ought to yield the value 0.");
-
-    printf("\n\t\t\tTEST VALUE: ");
-    fprintf(flot, "\n\t\t\tTEST VALUE: ");
-
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
-                                          string2unbounded_int("123")) ,1, flot);
-
-    printf("\n\t\t[iii] Given the values -123 and 120 the program ought to yield the value -3.");
-    fprintf(flot, "\n\t\t[iii] Given the values -123 and 120 the program ought to yield the value -3.");
-
-    printf("\n\t\t\tTEST VALUE: ");
-    fprintf(flot, "\n\t\t\tTEST VALUE: ");
-
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
-                                          string2unbounded_int("120")) ,1, flot);
-
-    printf("\n\t\t[ii] Given the values 120 and -123 the program ought to yield the value -3.");
-    fprintf(flot, "\n\t\t[ii] Given the values 120 and -123 the program ought to yield the value -3.");
-
-    printf("\n\t\t\tTEST VALUE: ");
-    fprintf(flot, "\n\t\t\tTEST VALUE: ");
-
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("120"),
-                                          string2unbounded_int("-123")) ,1, flot);
 
     print_new_line(2);
 
-    printf("\t [3] Adding two unbounded_int of the different size and signs which can be different or not.\n");
-    fprintf(flot, "\t [3] Adding two unbounded_int of the different size and signs which can be different or not.\n");
+    printf("\t[2] Multiplying a number by one will yield the same number as a result.\n");
+    fprintf(flot, "\t[2] Multiplying a number by one will yield the same number as a result.\n");
 
-    printf("\t\t[i] Given the values 123 and 0 the result ought to be 123. "
-           "\n\t\t\tTEST VALUE: ");
-    fprintf(flot, "\t\t[i] Given the values 123 and 0 the result ought to be 123. "
-           "\n\t\t\tTEST VALUE: ");
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("123"),
-                                          string2unbounded_int("0")), 1, flot);
-    print_new_line(1);
+    printf("\t\t\t 1234 X 1 = ");
+    fprintf(flot, "\t\t\t 1234 X 1 = ");
 
-    printf("\n\t\t[ii] Given the values -123 and 0 the result ought to be -123.\n");
-    fprintf(flot, "\n\t\t[ii] Given the values -123 and 0 the result ought to be -123.\n");
-
-    printf("\t\t\tTEST VALUE: ");
-    fprintf(flot, "\t\t\tTEST VALUE: ");
-    print_unbounded_int(unbounded_int_sum(string2unbounded_int("-123"),
-                                          string2unbounded_int("0")), 1, flot);
+    print_unbounded_int(unbounded_int_multiplication(string2unbounded_int("1234"),
+                                                     string2unbounded_int("1")), 0, flot);
 
     print_new_line(1);
-    print_separator('#');
+
+    printf("\t\t\t -1 X 1234 = ");
+    fprintf(flot, "\t\t\t -1 X 1234 = ");
+
+    print_unbounded_int(unbounded_int_multiplication(string2unbounded_int("-1"),
+                                                     string2unbounded_int("1234")), 0, flot);
+
+    print_new_line(2);
 
     fclose(flot);
+
     return EXIT_SUCCESS;
 }
 
