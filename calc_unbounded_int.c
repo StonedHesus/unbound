@@ -48,6 +48,7 @@ static char ** get_operands_of_expression(char *line);
 static int is_a_number(char *line);
 static int checkForOutputFile(const char *filename);
 static int is_a_valid_variable_name(const char *variable_name);
+static char * clean_input(char *line);
 
 // Global variables of the program.
 static FILE *input;
@@ -143,6 +144,24 @@ int main(int count, char **args){
 
 
 // Methods of the .c file.
+static char * clean_input(char * line){
+
+    assert(line != NULL);
+
+    // If line contains a mathematical operator then it should not be cleaned in this way.
+    if(is_a_mathematical_expression(line) != NULL)
+        return line;
+
+
+    char * pointer = line;
+
+    while(*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
+        pointer++;
+
+    *pointer = '\0';
+
+    return line;
+}
 static int is_a_valid_variable_name(const char *variable_name){
 
     assert(variable_name);
@@ -316,22 +335,46 @@ static void read(void){
                 }
             }
 
+            if(strstr(line, "clear") || strstr(line, "clear()"))
+                system("clear");
+
+            if(read == -1 || strstr(line, "exit") != NULL || strstr(line, "exit()") != NULL){
+
+                fprintf(output, "\n");
+                exit(0);
+            }
+
+            if(strstr(line, "len")){
+                // Return the number of digits of the variable.
+
+                strtok(line, " ");
+                char *value = strtok(NULL, " ");
+                char *pointer = value;
+
+                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    pointer += 1;
+
+                *pointer = '\0';
+
+                write("%d", search_in_dictionary(memory, value)->length);
+            }
 
             if(!strstr(line, "=")){
                 // If the line is not an assignment then it might be an operation, a number or a command, either of
                 // these requires immediate output.
 
+
+                clean_input(line);
                 if(is_a_number(line) == 1){
 
                     write(line);
                 } else{
 
+                    char ** operators = is_a_mathematical_expression(line);
 
-                    char **result = is_a_mathematical_expression(line);
-                    if(result == NULL)
-                        system(line);
-                    else
-                        write(line);
+                    // Perform the adequate mathematical operation.
+                    // SOLUTION: BUILD A BINARY TREE CONTAINING THE PROPER PRECEDENCE OF THE OPERATIONS.
+                    //write(line);
                 }
             } else{
 
@@ -363,34 +406,12 @@ static void read(void){
                 insert_into_dictionary(memory, key, string2unbounded_int(value));
             }
 
-            if(strstr(line, "len")){
-                // Return the number of digits of the variable.
 
-                strtok(line, " ");
-                char *value = strtok(NULL, " ");
-                char *pointer = value;
-
-                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
-                    pointer += 1;
-
-                *pointer = '\0';
-
-                write("%d", search_in_dictionary(memory, value)->length);
-            }
 
             if(strstr(line, "cd"))
                 //chdir(line);
                 // Solve conflict between the library which contains the chdir command and the method implemented
                 // by the interpreter.
-
-            if(strstr(line, "clear") || strstr(line, "clear()"))
-                system("clear");
-
-            if(read == -1 || strstr(line, "exit") != NULL || strstr(line, "exit()") != NULL){
-
-                fprintf(output, "\n");
-                exit(0);
-            }
 
             if(strstr(line, "?")){
                 system("clear");

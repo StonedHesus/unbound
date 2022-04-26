@@ -109,6 +109,8 @@ unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int se
         return string2unbounded_int("0");
     else {
         // Basic multiplication algorithm goes here.
+
+        
     }
 
     return (unbounded_int){};
