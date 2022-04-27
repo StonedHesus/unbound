@@ -129,9 +129,20 @@ void add_process(round_robin *current_roundRobin, command new_process){
 
         current_roundRobin->command = &new_process;
         current_roundRobin->next = current_roundRobin->previous = current_roundRobin;
+    } else{
+        // The Round Robin is not empty and thus we not to place the current process at the desired position,
+        // for this implementation each new process will be added to the left, so as to save with the insertion
+        // operation.
+
+        round_robin temporary = create_round_robin();
+        temporary.command = &new_process;
+
+        current_roundRobin->previous->next = &temporary;
+        temporary.previous = current_roundRobin->previous;
+
+        temporary.next     =  current_roundRobin;
+        current_roundRobin->previous = &temporary;
     }
-
-
 }
 
 round_robin create_round_robin(){

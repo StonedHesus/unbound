@@ -311,6 +311,15 @@ static void read(void){
             read = getline(&line, &size, input);
 
             // Line is not an assignment, hence it can either be a variable or a command.
+            if(strstr(line, "?")){
+                system("clear");
+                fprintf(output, "calc_unbound -- An enhanced unbound shell\n");
+                fprintf(output, "=========================================\n\n");
+                fprintf(output, "calc_unbound offers an interpreter with convenient shell features for the unbound "
+                                "language.\n");
+
+            }
+
             if(strstr(line, "print") != NULL){
 
                 strtok(line, " ");
@@ -412,16 +421,6 @@ static void read(void){
                 //chdir(line);
                 // Solve conflict between the library which contains the chdir command and the method implemented
                 // by the interpreter.
-
-            if(strstr(line, "?")){
-                system("clear");
-                fprintf(output, "calc_unbound -- An enhanced unbound shell\n");
-                fprintf(output, "=========================================\n\n");
-                fprintf(output, "calc_unbound offers an interpreter with convenient shell features for the unbound "
-                                "language.\n");
-
-            }
-
             END:
 
             fprintf(output, "\n");
@@ -548,11 +547,9 @@ static void prepare(int count, char **args){
 
         // TODO: finish implementing the add_process method and correct the print_round_robin one.
 
-
         int file_already_exists    = 0;
         int process_already_exists = 0;
         for(int i = 1 ; i < count ; ++i){
-
             if(isFileName(args[i]) == 1){
 
                 if(file_already_exists == 0){
@@ -591,7 +588,23 @@ static void prepare(int count, char **args){
 
 
         //print_round_robin(roundRobin);
-        print_command(current_process);
+        //print_command(current_process);
+
+        command first = new_command("testing.test");
+        command second = new_command("command.order");
+        command third = new_command("the_third_one_is_for_good_luck.only");
+
+        round_robin testing = create_round_robin();
+
+        add_process(&testing, first);
+        add_process(&testing, second);
+        add_process(&testing, third);
+
+        print_command(*testing.command);
+        print_command(*testing.next->command);
+        print_command(*testing.next->next->command);
+
+        printf("\n %s %s %s", testing.command->target, testing.next->command->target, testing.next->next->command->target);
     }
 
 
