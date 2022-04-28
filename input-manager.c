@@ -134,6 +134,8 @@ void add_process(round_robin *current_roundRobin, command new_process){
         // for this implementation each new process will be added to the left, so as to save with the insertion
         // operation.
 
+        // TODO: FIX THE INSERTION PROBLEM.
+
         round_robin temporary = create_round_robin();
         temporary.command = &new_process;
 
@@ -142,6 +144,7 @@ void add_process(round_robin *current_roundRobin, command new_process){
 
         temporary.next     =  current_roundRobin;
         current_roundRobin->previous = &temporary;
+
     }
 }
 

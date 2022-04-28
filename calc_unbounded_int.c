@@ -5,7 +5,7 @@
 /**
  * This here .c file models the interpreter of the unbound programming language.
  *
- * @version 0.11
+ * @version 0.0.12
  * @author Andrei-Paul Ionescu
  */
 
@@ -56,6 +56,9 @@ static FILE *output;
 static unsigned int line_number = 1;
 static dictionary memory;
 
+// Macro constants of the program
+#define BUFFER_SIZE 2048
+
 int main(int count, char **args){
     /**
      *
@@ -72,8 +75,12 @@ int main(int count, char **args){
 
 
     /// TODO: ALTER THE WAY IN WHICH INPUT IS READ FROM THE TERMINAL FOR THE CURRENT APPROACH IS UNSAFE AND FRAUDULENT.
-    prepare(count, args);
-    run();
+//    prepare(count, args);
+//    run();
+
+    output = stdout;
+
+    readFile("test.ub");
 
 //    //readFile(args[1]);
 //    stack my_stack = create_execution_stack();
@@ -288,7 +295,6 @@ static void read(void){
      * @location Home office.
      */
 
-
     if(input == stdin){
 
         char *line = NULL;
@@ -342,6 +348,8 @@ static void read(void){
 
                     write(unbounded_int2string(*search_in_dictionary(memory, variable)));
                 }
+
+                goto END;
             }
 
             if(strstr(line, "clear") || strstr(line, "clear()"))
@@ -365,7 +373,15 @@ static void read(void){
 
                 *pointer = '\0';
 
+                if(search_in_dictionary(memory, value) == NULL){
+
+                    write("WARNING: The variable you are trying to access was not initialise anywhere in the scope"
+                          "of the program.");
+                }
+
                 write("%d", search_in_dictionary(memory, value)->length);
+
+                goto END;
             }
 
             if(!strstr(line, "=")){
@@ -493,6 +509,7 @@ static void write(char *line, ...){
     if(output == stdout){
 
         fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, buffer);
+        line_number += 1;
     }
 }
 
@@ -597,12 +614,15 @@ static void prepare(int count, char **args){
         round_robin testing = create_round_robin();
 
         add_process(&testing, first);
-        add_process(&testing, second);
-        add_process(&testing, third);
-
         print_command(*testing.command);
-        print_command(*testing.next->command);
-        print_command(*testing.next->next->command);
+        add_process(&testing, second);
+        print_command(*testing.previous->command);
+        add_process(&testing, third);
+        print_command(*testing.command);
+
+//        print_command(*testing.command);
+//        print_command(*testing.next->command);
+//        print_command(*testing.next->next->command);
 
         printf("\n %s %s %s", testing.command->target, testing.next->command->target, testing.next->next->command->target);
     }
@@ -625,12 +645,36 @@ static void parseLine(char *line){
     int assign = 0;
     int variable = 0;
 
-    // TODO: ACCOUNT FOR CASES IN WHICH WE DO NOT HAVE WHITESPACES HENCE A TURING MACHINE APPROACH WILL BE BETTER.
     while(token){
 
        if(strcmp(token, "print") == 0){
 
-           return;
+           strtok(line, NULL);
+
+           char * pointer = line;
+
+           while(*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
+               pointer += 1;
+
+           if(output == stdout){
+
+               // TODO: FIX THE SEGMENTATION ERROR WHICH APPEARS HERE.
+
+               if(search_in_dictionary(memory, token) == NULL){
+
+                   printf("ERROR: In your input file the variable %s is not initialise", token);
+                   exit(1);
+               } else{
+
+
+                   goto END;
+               }
+           } else{
+
+                return;
+           }
+
+           END:;
         }
 
         if(assign == 1 && variable == 1){
@@ -665,9 +709,16 @@ static void readFile(const char *path){
      * @location BU Licences Sorbonne Campus PMC
      */
 
+    assert(path);
+
     FILE *temporary;
-    char *line = NULL;
-    size_t len = 0;
+    char *line = malloc(sizeof(char) * BUFFER_SIZE);
+    if(line == NULL){
+
+        printf("ERROR: The file could not be read!\n");
+        abort();
+    }
+    size_t len;
     ssize_t read;
 
     temporary = fopen(path, "r");
@@ -679,8 +730,12 @@ static void readFile(const char *path){
         exit(1);
     }
 
-    while((read = getline(&line, &len, temporary)) != -1){
+    while(1){
 
+        read = getline(&line, &len, temporary);
+
+        if(read == -1) break;
+        write(line);
         parseLine(line);
     }
 
