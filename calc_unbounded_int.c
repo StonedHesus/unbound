@@ -75,12 +75,12 @@ int main(int count, char **args){
 
 
     /// TODO: ALTER THE WAY IN WHICH INPUT IS READ FROM THE TERMINAL FOR THE CURRENT APPROACH IS UNSAFE AND FRAUDULENT.
-//    prepare(count, args);
-//    run();
+    prepare(count, args);
+    run();
 
-    output = stdout;
+    //output = stdout;
 
-    readFile("test.ub");
+    //readFile("test.ub");
 
 //    //readFile(args[1]);
 //    stack my_stack = create_execution_stack();
@@ -285,7 +285,7 @@ static char **is_a_mathematical_expression(char *line){
     else
         return result;
 }
-static void read(void){
+static void read(void) {
     /**
      *
      *
@@ -295,16 +295,19 @@ static void read(void){
      * @location Home office.
      */
 
-    if(input == stdin){
+
+    // TODO: FIX THE FAULTY BEHAVIOUR WHICH HAS BEEN INTRODUCED.
+
+    if (input == stdin) {
 
         char *line = NULL;
         size_t size = 0;
         ssize_t read = 0;
         int beginning = 0;
 
-        while(1){
+        while (1) {
 
-            if(beginning == 0){
+            if (beginning == 0) {
 
                 fprintf(output, "Unbound 0.0.10 (default, 13th April 2022, 15:33:49)\n");
                 fprintf(output, "calc_unbound -- An enhanced unbound shell; type '?' for help.\n\n");
@@ -317,7 +320,53 @@ static void read(void){
             read = getline(&line, &size, input);
 
             // Line is not an assignment, hence it can either be a variable or a command.
-            if(strstr(line, "?")){
+            if (!strstr(line, "=")) {
+                // If the line is not an assignment then it might be an operation, a number or a command, either of
+                // these requires immediate output.
+
+
+                clean_input(line);
+                if (is_a_number(line) == 1) {
+
+                    write(line);
+                } else {
+
+                    char **operators = is_a_mathematical_expression(line);
+
+                    // Perform the adequate mathematical operation.
+                    // SOLUTION: BUILD A BINARY TREE CONTAINING THE PROPER PRECEDENCE OF THE OPERATIONS.
+                    //write(line);
+                }
+            } else {
+
+                char *key = strtok(line, "=");
+                char *pointer = key;
+
+                while (*pointer != ' ')
+                    pointer += 1;
+
+                *pointer = '\0';
+
+                if (is_a_valid_variable_name(key) == 0) {
+
+                    fprintf(output, "\nERROR: Incorrect variable name!\n");
+                    goto END;
+                }
+
+                char *value = strtok(NULL, " ");
+
+                pointer = value;
+
+                while (*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    pointer += 1;
+
+
+                *pointer = '\0';
+
+                insert_into_dictionary(memory, key, string2unbounded_int(value));
+            }
+
+            if (strstr(line, "?")) {
                 system("clear");
                 fprintf(output, "calc_unbound -- An enhanced unbound shell\n");
                 fprintf(output, "=========================================\n\n");
@@ -326,25 +375,25 @@ static void read(void){
 
             }
 
-            if(strstr(line, "print") != NULL){
+            if (strstr(line, "print") != NULL) {
 
                 strtok(line, " ");
-                char * variable = strtok(NULL, " ");
+                char *variable = strtok(NULL, " ");
 
                 char *pointer = variable;
 
                 is_a_mathematical_expression(variable);
-                while(*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
+                while (*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
                     // Remove extra spaces from the suffix of the handle.
                     pointer += 1;
 
                 // Add the string terminator.
                 *pointer = '\0';
 
-                if(search_in_dictionary(memory, variable) == 0){
+                if (search_in_dictionary(memory, variable) == 0) {
 
                     printf("ERROR: The variable %s was not defined!\n", variable);
-                } else{
+                } else {
 
                     write(unbounded_int2string(*search_in_dictionary(memory, variable)));
                 }
@@ -352,28 +401,28 @@ static void read(void){
                 goto END;
             }
 
-            if(strstr(line, "clear") || strstr(line, "clear()"))
+            if (strstr(line, "clear") || strstr(line, "clear()"))
                 system("clear");
 
-            if(read == -1 || strstr(line, "exit") != NULL || strstr(line, "exit()") != NULL){
+            if (read == -1 || strstr(line, "exit") != NULL || strstr(line, "exit()") != NULL) {
 
                 fprintf(output, "\n");
                 exit(0);
             }
 
-            if(strstr(line, "len")){
+            if (strstr(line, "len")) {
                 // Return the number of digits of the variable.
 
                 strtok(line, " ");
                 char *value = strtok(NULL, " ");
                 char *pointer = value;
 
-                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                while (*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
                     pointer += 1;
 
                 *pointer = '\0';
 
-                if(search_in_dictionary(memory, value) == NULL){
+                if (search_in_dictionary(memory, value) == NULL) {
 
                     write("WARNING: The variable you are trying to access was not initialise anywhere in the scope"
                           "of the program.");
@@ -384,451 +433,495 @@ static void read(void){
                 goto END;
             }
 
-            if(!strstr(line, "=")){
-                // If the line is not an assignment then it might be an operation, a number or a command, either of
-                // these requires immediate output.
+            if (strstr(line, "-=") || strstr(line, "+=") || strstr(line, "*=") || strstr(line, "/=")) {
+                // Mutate the value of the variable on the left side of operator.
 
+                char *pointer = line;
 
-                clean_input(line);
-                if(is_a_number(line) == 1){
+                char *variable = malloc(sizeof(char) * BUFFER_SIZE);
 
-                    write(line);
-                } else{
+                if (variable == NULL) {
 
-                    char ** operators = is_a_mathematical_expression(line);
-
-                    // Perform the adequate mathematical operation.
-                    // SOLUTION: BUILD A BINARY TREE CONTAINING THE PROPER PRECEDENCE OF THE OPERATIONS.
-                    //write(line);
-                }
-            } else{
-
-                char *key = strtok(line, "=");
-                char *pointer = key;
-
-                while(*pointer != ' ')
-                   pointer += 1;
-
-                *pointer = '\0';
-
-                if(is_a_valid_variable_name(key) == 0){
-
-                    fprintf(output, "\nERROR: Incorrect variable name!\n");
-                    goto END;
+                    printf("ERROR: An internal error occurred, thus not enabling you to modify the value of a variable");
+                    abort();
                 }
 
-                char *value = strtok(NULL, " ");
+                char *value = malloc(sizeof(char) * BUFFER_SIZE);
 
-                pointer = value;
+                if (value == NULL) {
 
-                while(*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    printf("ERROR: An internal error occurred, thus not enabling you to modify the value of a variable");
+                    abort();
+                }
+
+                char *operator = malloc(sizeof(char) * 3);
+
+                if (operator == NULL) {
+
+                    printf("ERROR: An internal error occurred, thus not enabling you to modify the value of a variable");
+                    abort();
+                }
+
+                int index = 0;
+
+                while (*pointer != ' ' && *pointer != '+' && *pointer != '-' && *pointer != '*' && *pointer != '/') {
+
+                    variable[index++] = *pointer;
                     pointer += 1;
+                }
+
+                variable[index] = '\0';
+
+                index = 0;
+
+                while (*pointer != '=') {
+
+                    if (*pointer == ' ')
+                        pointer++;
+                    operator[index++] = *pointer;
+                    pointer += 1;
+                }
+
+                operator[index] = '\0';
+                index = 0;
+
+                while (*pointer != ' ' && *pointer != '\t' && *pointer != '\n') {
+
+
+                    if (*pointer == '=' || *pointer == ' ')
+                        // skip the equal sign.
+                        pointer++;
+                    value[index++] = *pointer;
+                    pointer += 1;
+                }
+                value[index] = '\0';
+
+                //printf("%s", operator);
+
+                switch (operator[0]) {
+
+                    case '+': {
+
+                        insert_into_dictionary(
+                                memory, variable,
+                                unbounded_int_sum(*search_in_dictionary(memory, variable),
+                                                  string2unbounded_int(value)));
+                    }
+
+                    case '-': {
+
+                        insert_into_dictionary(
+                                memory, variable,
+                                unbounded_int_subtraction(*search_in_dictionary(memory, variable),
+                                                          string2unbounded_int(value)));
+                    }
+
+                    case '*': {
+
+                        insert_into_dictionary(
+                                memory, variable,
+                                unbounded_int_multiplication(*search_in_dictionary(memory, variable),
+                                                             string2unbounded_int(value)));
+                    }
+
+                    case '/': {
+
+//                        insert_into_dictionary(
+//                                memory, variable,
+//                                unbounded_int_division(*search_in_dictionary(memory, variable), string2unbounded_int(value)));
+//                    }
+                    }
+
+
+                        goto END;
+                }
 
 
 
-                *pointer = '\0';
-
-                insert_into_dictionary(memory, key, string2unbounded_int(value));
             }
 
-
-
-            if(strstr(line, "cd"))
+            if (strstr(line, "cd"))
                 //chdir(line);
                 // Solve conflict between the library which contains the chdir command and the method implemented
                 // by the interpreter.
-            END:
+                END:
 
-            fprintf(output, "\n");
-            parseLine(line);
+                fprintf(output, "\n");
+
         }
 
     }
-
 }
 
-static void write(char *line, ...){
-    /**
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 04.04.2022
-     * @version 0.01
-     * @location Home Office.
-     */
+    static void write(char *line, ...) {
+        /**
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 04.04.2022
+         * @version 0.01
+         * @location Home Office.
+         */
 
-    assert(line);
+        assert(line);
 
-    // Prepare the string for output.
-    va_list vaList;
-    va_start(vaList, line);
+        // Prepare the string for output.
+        va_list vaList;
+        va_start(vaList, line);
 
-    char buffer[10000] = {0};
-    char temporary[1000];
+        char buffer[10000] = {0};
+        char temporary[1000];
 
-    int i = 0, j = 0;
+        int i = 0, j = 0;
 
-    while(line && line[i]){
+        while (line && line[i]) {
 
-        if(line[i] == '%')
-        {
-            i++;
-            switch(line[i])
-            {
-                case 'c':
-                {
-                    buffer[j] = (char)va_arg(vaList, int);
-                    j++;
-                    break;
-                }
-                case 'd':
-                {
-                    snprintf(temporary,sizeof(temporary),"%d",va_arg(vaList, int));
-                    //itoa(va_arg(vaList, int), temporary, 10);
-                    strcpy(&buffer[j], temporary);
-                    j += strlen(temporary);
-                    break;
-                }
-                case 'x':
-                {
-                    snprintf(temporary,sizeof(temporary),"%x",va_arg(vaList, int));
-                    //itoa(va_arg(vaList, int), temporary, 16);
-                    strcpy(&buffer[j], temporary);
-                    j += strlen(temporary);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            buffer[j] = line[i];
-            j++;
-        }
-        i++;
-    }
-
-    if(output == stdout){
-
-        fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, buffer);
-        line_number += 1;
-    }
-}
-
-static void run(void){
-    /**
-     *
-     *
-     * This here method manages the behaviour of the hole interpreter, thus it is dependent on whether or not the
-     * environment has been set out properly or not, therefore prior to calling run we strongly advise to use the
-     * prepare method.
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 04.04.2022
-     * @version 0.01
-     * @location Home office.
-     */
-
-    memory = create_dictionary();
-    read();
-
-
-}
-
-static void prepare(int count, char **args){
-    /**
-     *
-     * @param1, the number of pointers which are found in the list args.
-     * @param2, a list of pointers.
-     *
-     * This method determines, based on the given input, whether the user of the program specified any particular input
-     * or output files or if any other options had been passed to the program, in which case the software is bound to
-     * respond according to the user's input or to warn him about fraudulent behaviour which it might cause.
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 04.04.2022
-     * @version 0.01
-     * @location Home office.
-     */
-
-    if(count == 1){
-
-        input   = stdin;
-        output  = stdout;
-        return;
-    } else{
-        // Commence the round-robin algorithm.
-
-        round_robin roundRobin = create_round_robin();
-        command current_process;
-
-        output = stdout;
-
-        // TODO: finish implementing the add_process method and correct the print_round_robin one.
-
-        int file_already_exists    = 0;
-        int process_already_exists = 0;
-        for(int i = 1 ; i < count ; ++i){
-            if(isFileName(args[i]) == 1){
-
-                if(file_already_exists == 0){
-
-                    if(process_already_exists == 0){
-
-                        current_process = new_command(args[i]);
-                        process_already_exists = 1;
-                    } else{
-
-                        add_target(&current_process, args[i]);
+            if (line[i] == '%') {
+                i++;
+                switch (line[i]) {
+                    case 'c': {
+                        buffer[j] = (char) va_arg(vaList, int);
+                        j++;
+                        break;
                     }
-                    file_already_exists = 1;
-                } else{
-
-                    add_process(&roundRobin, current_process);
-
-                    current_process = new_empty_command();
-                    file_already_exists = 0;
-                    process_already_exists = 1;
+                    case 'd': {
+                        snprintf(temporary, sizeof(temporary), "%d", va_arg(vaList, int));
+                        //itoa(va_arg(vaList, int), temporary, 10);
+                        strcpy(&buffer[j], temporary);
+                        j += strlen(temporary);
+                        break;
+                    }
+                    case 'x': {
+                        snprintf(temporary, sizeof(temporary), "%x", va_arg(vaList, int));
+                        //itoa(va_arg(vaList, int), temporary, 16);
+                        strcpy(&buffer[j], temporary);
+                        j += strlen(temporary);
+                        break;
+                    }
                 }
-
-            } else{
-
-                if(process_already_exists == 0){
-
-                    current_process = new_empty_command();
-                    add_option(&current_process, args[i]);
-                    process_already_exists = 1;
-                } else{
-
-                    add_option(&current_process, args[i]);
-                }
+            } else {
+                buffer[j] = line[i];
+                j++;
             }
+            i++;
         }
 
+        if (output == stdout) {
 
-        //print_round_robin(roundRobin);
-        //print_command(current_process);
+            fprintf(output, "%sOut [%s%d%s%s]: %s%s\n", RED, BOLD_RED, line_number, DEFAULT, RED, DEFAULT, buffer);
+            line_number += 1;
+        }
+    }
 
-        command first = new_command("testing.test");
-        command second = new_command("command.order");
-        command third = new_command("the_third_one_is_for_good_luck.only");
+    static void run(void) {
+        /**
+         *
+         *
+         * This here method manages the behaviour of the hole interpreter, thus it is dependent on whether or not the
+         * environment has been set out properly or not, therefore prior to calling run we strongly advise to use the
+         * prepare method.
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 04.04.2022
+         * @version 0.01
+         * @location Home office.
+         */
 
-        round_robin testing = create_round_robin();
+        memory = create_dictionary();
+        read();
 
-        add_process(&testing, first);
-        print_command(*testing.command);
-        add_process(&testing, second);
-        print_command(*testing.previous->command);
-        add_process(&testing, third);
-        print_command(*testing.command);
+
+    }
+
+    static void prepare(int count, char **args) {
+        /**
+         *
+         * @param1, the number of pointers which are found in the list args.
+         * @param2, a list of pointers.
+         *
+         * This method determines, based on the given input, whether the user of the program specified any particular input
+         * or output files or if any other options had been passed to the program, in which case the software is bound to
+         * respond according to the user's input or to warn him about fraudulent behaviour which it might cause.
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 04.04.2022
+         * @version 0.01
+         * @location Home office.
+         */
+
+        if (count == 1) {
+
+            input = stdin;
+            output = stdout;
+            return;
+        } else {
+            // Commence the round-robin algorithm.
+
+            round_robin roundRobin = create_round_robin();
+            command current_process;
+
+            output = stdout;
+
+            // TODO: finish implementing the add_process method and correct the print_round_robin one.
+
+            int file_already_exists = 0;
+            int process_already_exists = 0;
+            for (int i = 1; i < count; ++i) {
+                if (isFileName(args[i]) == 1) {
+
+                    if (file_already_exists == 0) {
+
+                        if (process_already_exists == 0) {
+
+                            current_process = new_command(args[i]);
+                            process_already_exists = 1;
+                        } else {
+
+                            add_target(&current_process, args[i]);
+                        }
+                        file_already_exists = 1;
+                    } else {
+
+                        add_process(&roundRobin, current_process);
+
+                        current_process = new_empty_command();
+                        file_already_exists = 0;
+                        process_already_exists = 1;
+                    }
+
+                } else {
+
+                    if (process_already_exists == 0) {
+
+                        current_process = new_empty_command();
+                        add_option(&current_process, args[i]);
+                        process_already_exists = 1;
+                    } else {
+
+                        add_option(&current_process, args[i]);
+                    }
+                }
+            }
+
+
+            //print_round_robin(roundRobin);
+            //print_command(current_process);
+
+            command first = new_command("testing.test");
+            command second = new_command("command.order");
+            command third = new_command("the_third_one_is_for_good_luck.only");
+
+            round_robin testing = create_round_robin();
+
+            add_process(&testing, first);
+            print_command(*testing.command);
+            add_process(&testing, second);
+            print_command(*testing.previous->command);
+            add_process(&testing, third);
+            print_command(*testing.command);
 
 //        print_command(*testing.command);
 //        print_command(*testing.next->command);
 //        print_command(*testing.next->next->command);
 
-        printf("\n %s %s %s", testing.command->target, testing.next->command->target, testing.next->next->command->target);
-    }
-
-
-}
-
-static void parseLine(char *line){
-    /**
-     *
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 01.04.2022
-     * @version 0.01
-     * @location BU Licences Sorbonne Campus PMC
-     */
-
-    char *token = strtok(line, " ");
-
-    int assign = 0;
-    int variable = 0;
-
-    while(token){
-
-       if(strcmp(token, "print") == 0){
-
-           strtok(line, NULL);
-
-           char * pointer = line;
-
-           while(*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
-               pointer += 1;
-
-           if(output == stdout){
-
-               // TODO: FIX THE SEGMENTATION ERROR WHICH APPEARS HERE.
-
-               if(search_in_dictionary(memory, token) == NULL){
-
-                   printf("ERROR: In your input file the variable %s is not initialise", token);
-                   exit(1);
-               } else{
-
-
-                   goto END;
-               }
-           } else{
-
-                return;
-           }
-
-           END:;
+            printf("\n %s %s %s", testing.command->target, testing.next->command->target,
+                   testing.next->next->command->target);
         }
 
-        if(assign == 1 && variable == 1){
+
+    }
+
+    static void parseLine(char *line) {
+        /**
+         *
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 01.04.2022
+         * @version 0.01
+         * @location BU Licences Sorbonne Campus PMC
+         */
+
+        char *token = strtok(line, " ");
+
+        int assign = 0;
+        int variable = 0;
+
+        while (token) {
+
+            if (strcmp(token, "print") == 0) {
 
 
+                strtok(NULL, " ");
 
-            assign   = 0;
-            variable = 0;
+                char *pointer = line;
+
+                while (*pointer != ' ' && *pointer != '\n' && *pointer != '\t')
+                    pointer += 1;
+
+                *pointer = '\0';
+                printf("The handle is %s\n", token);
+
+                // TODO: FIX THE SEGMENTATION ERROR WHICH APPEARS HERE.
+
+                if (search_in_dictionary(memory, token) == NULL) {
+
+                    printf("ERROR: In your input file the variable %s is not initialise", token);
+                    exit(1);
+                } else {
+
+                    print_unbounded_int(*search_in_dictionary(memory, token),
+                                        1, output);
+                }
+            }
+
+            if (assign == 1 && variable == 1) {
+
+
+                assign = 0;
+                variable = 0;
+            }
+
+            if (isalpha(*token)) {
+                variable = 1;
+            } else if (strcmp(token, "=") == 0) {
+
+                assign = 1;
+            }
+
+            token = strtok(NULL, " ");
+            END:;
         }
 
-        if(isalpha(*token)){
-            variable = 1;
-        } else
-            if(strcmp(token, "=") == 0){
 
-            assign = 1;
+    }
+
+    static void readFile(const char *path) {
+        /**
+         *
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 01.04.2022
+         * @version 0.01
+         * @location BU Licences Sorbonne Campus PMC
+         */
+
+        assert(path);
+
+        FILE *temporary;
+        char *line = malloc(sizeof(char) * BUFFER_SIZE);
+        if (line == NULL) {
+
+            printf("ERROR: The file could not be read!\n");
+            abort();
+        }
+        size_t len;
+        ssize_t read;
+
+        temporary = fopen(path, "r");
+
+        if (temporary == NULL) {
+
+            printf("File error: The file which you wanted to read does not exist! "
+                   "We advise double checking the path you used.\n");
+            exit(1);
         }
 
-        token = strtok(NULL, " ");
+        while (1) {
+
+            read = getline(&line, &len, temporary);
+
+            if (read == -1) break;
+            write(line);
+            parseLine(line);
+        }
+
+        fclose(temporary);
+        if (line)
+            free(line);
+        //exit(EXIT_SUCCESS);
     }
 
+    static int isFileName(const char *entity) {
+        /**
+         * @param entity, a const char object.
+         *
+         * Determine whether entity is a file name or not utilising the following criteria, if entity is a file name then
+         * it stands to reason that it contains only one '.' which separates the name of the file from its extension.
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 28.03.2022
+         * @version 0.02
+         */
+        assert(entity);
 
-}
+        if (!strstr(entity, ".")) return 0;
 
-static void readFile(const char *path){
-    /**
-     *
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 01.04.2022
-     * @version 0.01
-     * @location BU Licences Sorbonne Campus PMC
-     */
+        int times = 0;
 
-    assert(path);
+        char *result = strtok(strdup(entity), ".");
 
-    FILE *temporary;
-    char *line = malloc(sizeof(char) * BUFFER_SIZE);
-    if(line == NULL){
+        if (result == NULL) return 0;
 
-        printf("ERROR: The file could not be read!\n");
-        abort();
-    }
-    size_t len;
-    ssize_t read;
+        while (result) {
 
-    temporary = fopen(path, "r");
+            times += 1;
+            result = strtok(NULL, ".");
+        }
 
-    if(temporary == NULL){
-
-        printf("File error: The file which you wanted to read does not exist! "
-               "We advise double checking the path you used.\n");
-        exit(1);
+        if (times == 0 || times > 2) return 0;
+        else
+            return 1;
     }
 
-    while(1){
+    static int checkForOutputFile(const char *filename) {
+        /**
+         * @param filename; a string object which represents the name of a possible output file.
+         *
+         * This here method determines whether or not the file name passed to the method is a valid output file or not,
+         * valid output files end with the extensions .txt, .out.
+         *
+         * @since 0.09
+         * @version final
+         * @author Andrei-Paul Ionescu
+         * @location Crous cafeteria Grands Moulines.
+         */
 
-        read = getline(&line, &len, temporary);
+        assert(filename != NULL);
 
-        if(read == -1) break;
-        write(line);
-        parseLine(line);
-    }
+        const char *first_result = strstr(filename, ".txt");
+        const char *second_result = strstr(filename, ".out");
 
-    fclose(temporary);
-    if (line)
-        free(line);
-    //exit(EXIT_SUCCESS);
-}
+        if (!first_result && !second_result) {
 
-static int isFileName(const char *entity){
-    /**
-     * @param entity, a const char object.
-     *
-     * Determine whether entity is a file name or not utilising the following criteria, if entity is a file name then
-     * it stands to reason that it contains only one '.' which separates the name of the file from its extension.
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 28.03.2022
-     * @version 0.02
-     */
-    assert(entity);
+            printf("File format error: all output files must bear the extensions .txt or .out.\n");
+            return 0;
+        }
 
-    if(!strstr(entity, ".")) return  0;
-
-    int times = 0;
-
-    char *result = strtok(strdup(entity), ".");
-
-    if(result == NULL) return 0;
-
-    while(result){
-
-        times += 1;
-        result = strtok(NULL, ".");
-    }
-
-    if(times == 0 || times > 2) return 0;
-    else
         return 1;
-}
-
-static int checkForOutputFile(const char *filename){
-    /**
-     * @param filename; a string object which represents the name of a possible output file.
-     *
-     * This here method determines whether or not the file name passed to the method is a valid output file or not,
-     * valid output files end with the extensions .txt, .out.
-     *
-     * @since 0.09
-     * @version final
-     * @author Andrei-Paul Ionescu
-     * @location Crous cafeteria Grands Moulines.
-     */
-
-    assert(filename != NULL);
-
-    const char *first_result  = strstr(filename, ".txt");
-    const char *second_result = strstr(filename, ".out");
-
-    if(!first_result && !second_result){
-
-        printf("File format error: all output files must bear the extensions .txt or .out.\n");
-        return 0;
     }
 
-    return 1;
-}
+    static int checkForInputFile(const char *filename) {
+        /**
+         * @param filename; a const char( string object whose values we cannot alter) which represents the name of
+         * a possible input file.
+         *
+         * This here method determines whether or not the input file passed to the interpret ends with one of the
+         * allowed extension thus marking it as a file containing unbound code.
+         *
+         * @author Andrei-Paul Ionescu
+         * @date 28.03.2022
+         * @version final
+         */
 
-static int checkForInputFile(const char *filename){
-    /**
-     * @param filename; a const char( string object whose values we cannot alter) which represents the name of
-     * a possible input file.
-     *
-     * This here method determines whether or not the input file passed to the interpret ends with one of the
-     * allowed extension thus marking it as a file containing unbound code.
-     *
-     * @author Andrei-Paul Ionescu
-     * @date 28.03.2022
-     * @version final
-     */
+        assert(filename != NULL);
 
-    assert(filename != NULL);
+        const char *first_result = strstr(filename, ".unbound");
+        const char *second_result = strstr(filename, ".ub");
+        if (!first_result && !second_result) {
 
-    const char *first_result  = strstr(filename, ".unbound");
-    const char *second_result = strstr(filename, ".ub");
-    if(!first_result && !second_result){
+            printf("File format error: all files containing code written in unbound must finish with the "
+                   "extension .unbound or .ub.\n");
+            return 0;
+        }
 
-        printf("File format error: all files containing code written in unbound must finish with the "
-               "extension .unbound or .ub.\n");
-        return 0;
+        return 1;
     }
-
-    return 1;
-}
-
-
