@@ -13,7 +13,7 @@
 
 /**
  *
- * @version 0.0.9
+ * @version 0.0.10
  * @author Andrei-Paul Ionescu
  */
 
@@ -34,6 +34,70 @@ typedef struct digit{
 
 
 // Helper methods.
+static unbounded_int create_empty_unbounded_int_object(int length, int default_value){
+    /**
+     * @param length; the number of cells which the object will contain.
+     * @param default_value; the default value for the cells.
+     *
+     * This method creates an unbounded_int object and it populates it with length cells whose values are initialised
+     * to the default value specified by the user.
+     *
+     * @since 0.0.10
+     * @version final
+     * @author Andrei-Paul Ionescu
+     */
+
+    unbounded_int *result = malloc(sizeof(unbounded_int));
+
+    if(result == NULL) abort();
+
+    result->sign = '+';
+    result->length = length;
+
+    digit *pointer_to_tail = NULL;
+
+    while(length){
+
+        if(pointer_to_tail == NULL){
+            // The list is empty;
+
+            pointer_to_tail = malloc(sizeof(digit));
+            if(pointer_to_tail == NULL) abort();
+
+            pointer_to_tail->value = (char) (default_value + '0');
+            pointer_to_tail->previous = NULL;
+            pointer_to_tail->next = NULL;
+        } else{
+
+            digit *temporary = malloc(sizeof(digit));
+            if(temporary == NULL) abort();
+
+            temporary->previous = pointer_to_tail;
+            temporary->next = NULL;
+            temporary->value = (char)(default_value + '0');
+
+            // Update the current pointer.
+            pointer_to_tail->next = temporary;
+            pointer_to_tail = temporary;
+        }
+
+        length -= 1;
+    }
+
+    result->last = pointer_to_tail;
+
+    // Retrieve the head's address.
+
+    digit *pointer_to_head = result->last;
+
+    while(pointer_to_head->previous != NULL)
+        pointer_to_head = pointer_to_head->previous;
+
+    result->first = pointer_to_head;
+
+    return *result;
+}
+
 static int lengthOfString(const char *string){
     /**
      *
@@ -96,7 +160,7 @@ unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int se
      *  This method performs the multiplication of the two unbounded_int objects and returns their result.
      *
      *  @since 0.0.9
-     *  @version 0.0.1
+     *  @version 0.0.2
      *  @author Andrei-Paul Ionescu
      *  @location Home office.
      */
@@ -110,6 +174,32 @@ unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int se
     else {
         // Basic multiplication algorithm goes here.
 
+        unbounded_int *result = NULL; ///TODO: Implement a constructor which creates an unbounded_int object whose length is
+                                    ///  the one specified in the argument and whose values are initialised to zero.
+
+//        digit *pointer_to_first_number = first.first;
+//        digit *pointer_to_second_number = second.first;
+//        digit *pointer_to_result = NULL;
+//
+//        int retained;
+//
+//        for(int i = 0 ; i < second.length ; ++i){
+//
+//            retained = 0;
+//            if((pointer_to_first_number[i]).value == '0')
+//                continue;
+//
+//            for(int ii = 0 ; ii < first.length ; ++ii){
+//
+//                int temporary_value = pointer_to_result[i + ii] +
+//                        pointer_to_first_number[ii] * pointer_to_second_number[i] + retained;
+//
+//                pointer_to_result[i + ii] = temporary_value % 10;
+//                retained = temporary_value/10;
+//            }
+//
+//            pointer_to_result[i + first.length] = retained;
+//        }
         
     }
 
@@ -338,7 +428,6 @@ unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
 
             remainder =  ((pointer_towards_digit_of_the_first_number->value - '0') +
                           (pointer_towards_digit_of_the_second_number->value - '0')) / 10;
-
 
 
             pointer_towards_digit_of_the_first_number = pointer_towards_digit_of_the_first_number->previous;

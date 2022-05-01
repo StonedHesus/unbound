@@ -37,7 +37,7 @@ int main(void){
      *  segmentation error, whilst the whole bunk of the file including the error messages could be perceived only by
      *  with the terminal.
      *
-     * @version 0.03
+     * @version 0.0.4
      * @author Andrei-Paul Ionescu
      * @date 03.04.2022
      * @location BU ENS Paris-Saclay
@@ -72,6 +72,29 @@ int main(void){
     print_new_line(1);
 
     fclose(flot);
+
+    /// The tests for this particular method are deprecated since the method is now a static one which can only be
+    /// accessed from within the unbounded-int compilation unit.
+
+//    flot = fopen("test-results.txt", "w");
+//
+//    print_separator('#');
+//    printf("\n# Tests for create_empty_unbounded_int_object:\n");
+//    fprintf(flot, "\n# Tests for create_empty_unbounded_int_object:\n");
+//
+//    printf("\t[1] Creating an empty unbounded_int object with 20 digits and the default of 1 should result in the value"
+//           "11111111111111111111, to appear on the screen, if not then the function's behaviour is faulty and hence this"
+//           "matter should be addressed immediately.\n");
+//    fprintf(flot, "\t[1] Creating an empty unbounded_int object with 20 digits and the default of 1 should result in the value"
+//                  "11111111111111111111, to appear on the screen, if not then the function's behaviour is faulty and hence this"
+//                  "matter should be addressed immediately.\n");
+//
+//    printf("\t\t\tTEST VALUE: ");
+//    fprintf(flot, "\t\t\tTEST VALUE: ");
+//    print_unbounded_int(create_empty_unbounded_int_object(20, 1), 1, flot);
+//    print_new_line(1);
+//
+//    fclose(flot);
 
 
     flot = fopen("test-results.txt", "a");
