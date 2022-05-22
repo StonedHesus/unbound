@@ -319,53 +319,6 @@ static void read(void) {
             line_number += 1;
             read = getline(&line, &size, input);
 
-            // Line is not an assignment, hence it can either be a variable or a command.
-            if (!strstr(line, "=")) {
-                // If the line is not an assignment then it might be an operation, a number or a command, either of
-                // these requires immediate output.
-
-
-                clean_input(line);
-                if (is_a_number(line) == 1) {
-
-                    write(line);
-                } else {
-
-                    char **operators = is_a_mathematical_expression(line);
-
-                    // Perform the adequate mathematical operation.
-                    // SOLUTION: BUILD A BINARY TREE CONTAINING THE PROPER PRECEDENCE OF THE OPERATIONS.
-                    //write(line);
-                }
-            } else {
-
-                char *key = strtok(line, "=");
-                char *pointer = key;
-
-                while (*pointer != ' ')
-                    pointer += 1;
-
-                *pointer = '\0';
-
-                if (is_a_valid_variable_name(key) == 0) {
-
-                    fprintf(output, "\nERROR: Incorrect variable name!\n");
-                    goto END;
-                }
-
-                char *value = strtok(NULL, " ");
-
-                pointer = value;
-
-                while (*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
-                    pointer += 1;
-
-
-                *pointer = '\0';
-
-                insert_into_dictionary(memory, key, string2unbounded_int(value));
-            }
-
             if (strstr(line, "?")) {
                 system("clear");
                 fprintf(output, "calc_unbound -- An enhanced unbound shell\n");
@@ -538,6 +491,53 @@ static void read(void) {
 
 
 
+            }
+
+            // Line is not an assignment, hence it can either be a variable or a command.
+            if (!strstr(line, "=")) {
+                // If the line is not an assignment then it might be an operation, a number or a command, either of
+                // these requires immediate output.
+
+
+                clean_input(line);
+                if (is_a_number(line) == 1) {
+
+                    write(line);
+                } else {
+
+                    char **operators = is_a_mathematical_expression(line);
+
+                    // Perform the adequate mathematical operation.
+                    // SOLUTION: BUILD A BINARY TREE CONTAINING THE PROPER PRECEDENCE OF THE OPERATIONS.
+                    //write(line);
+                }
+            } else {
+
+                char *key = strtok(line, "=");
+                char *pointer = key;
+
+                while (*pointer != ' ')
+                    pointer += 1;
+
+                *pointer = '\0';
+
+                if (is_a_valid_variable_name(key) == 0) {
+
+                    fprintf(output, "\nERROR: Incorrect variable name!\n");
+                    goto END;
+                }
+
+                char *value = strtok(NULL, " ");
+
+                pointer = value;
+
+                while (*pointer != ' ' && *pointer != '\t' && *pointer != '\n')
+                    pointer += 1;
+
+
+                *pointer = '\0';
+
+                insert_into_dictionary(memory, key, string2unbounded_int(value));
             }
 
             if (strstr(line, "cd"))
