@@ -25,12 +25,12 @@ extern unbounded_int string2unbounded_int(const char *e);
 extern int unbounded_int_cmp_unbounded_int(unbounded_int first, unbounded_int second);
 extern unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second);
 extern unbounded_int ll2unbounded_int(long long int integer);
-extern unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second, ...);
+extern unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second);
 extern unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int second);
 extern void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot);
 extern void destroy_unbounded_int(unbounded_int unboundedInt);
 extern char *unbounded_int2string(unbounded_int unboundedInt);
-extern unbounded_int_division(unbounded_int first, unbounded_int second);
+extern unbounded_int unbounded_int_division(unbounded_int first, unbounded_int second);
 
 
 #endif //UNBOUNDED_INT_UNBOUNDED_INT_H

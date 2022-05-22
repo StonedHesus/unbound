@@ -174,36 +174,46 @@ unbounded_int unbounded_int_multiplication(unbounded_int first, unbounded_int se
     else {
         // Basic multiplication algorithm goes here.
 
-        unbounded_int *result = NULL; ///TODO: Implement a constructor which creates an unbounded_int object whose length is
-                                    ///  the one specified in the argument and whose values are initialised to zero.
+        unbounded_int result = create_empty_unbounded_int_object(first.length+second.length, 0);
 
-//        digit *pointer_to_first_number = first.first;
-//        digit *pointer_to_second_number = second.first;
-//        digit *pointer_to_result = NULL;
-//
-//        int retained;
-//
-//        for(int i = 0 ; i < second.length ; ++i){
-//
-//            retained = 0;
-//            if((pointer_to_first_number[i]).value == '0')
-//                continue;
-//
-//            for(int ii = 0 ; ii < first.length ; ++ii){
-//
-//                int temporary_value = pointer_to_result[i + ii] +
-//                        pointer_to_first_number[ii] * pointer_to_second_number[i] + retained;
-//
-//                pointer_to_result[i + ii] = temporary_value % 10;
-//                retained = temporary_value/10;
-//            }
-//
-//            pointer_to_result[i + first.length] = retained;
-//        }
-        
+        digit *pointer_to_first_number = first.first;
+        digit *pointer_to_second_number = second.first;
+        digit *pointer_to_result = result.first;
+
+        int retained;
+        digit *current;
+
+        for(int i = 0 ; i < second.length ; ++i, pointer_to_second_number = pointer_to_second_number->next, pointer_to_result = pointer_to_result->next){
+
+            retained = 0;
+            current  = pointer_to_result;
+            if(pointer_to_second_number->value == '0')
+                continue;
+
+            for(int ii = 0 ; ii < first.length ; ++ii, pointer_to_first_number = pointer_to_first_number->next){
+
+                int temporary_value = (current->value - '0') +
+                       ((pointer_to_first_number->value - '0') * (pointer_to_second_number->value - '0')) + retained;
+
+                current->value = (char)(temporary_value % 10 + '0');
+                retained = temporary_value/10;
+
+                pointer_to_result = pointer_to_result->next;
+            }
+
+            //pointer_to_result[i + first.length].value = (char)(retained + '0');
+
+        }
+
+        // Make sure that the result has the correct signed stored.
+
+        if(first.sign == '-' ^ second.sign == '-')
+            // We use XOR since if the two numbers have the same sign then the result is positive.
+            result.sign = '-';
+
+
+        return result;
     }
-
-    return (unbounded_int){};
 }
 
 
@@ -287,7 +297,7 @@ void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot){
 
 /// TODO: Fix the tossing around of values between the subtraction method and addition one.
 
-unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second, ...){
+unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int second){
     /**
      *
      * @param1 first, an unbounded_int.
@@ -301,12 +311,6 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
      * @version 28.03.2022
      */
 
-    va_list vaList;
-
-    int calledFromAPreviousMethod = va_arg(vaList, int);
-
-    if (calledFromAPreviousMethod != 1){
-
     if(first.sign == '-' && second.sign == '+'){
 
         second.sign = '-';
@@ -319,7 +323,6 @@ unbounded_int unbounded_int_subtraction(unbounded_int first, unbounded_int secon
         return unbounded_int_sum(first, second);
     }
 
-    }
 
 
     long long int result = 0;
@@ -403,12 +406,12 @@ unbounded_int unbounded_int_sum(unbounded_int first, unbounded_int second){
 
     if(first.sign == '+' && second.sign == '-'){
 
-        return unbounded_int_subtraction(first, second, 1);
+        return unbounded_int_subtraction(first, second);
     }
 
     if(first.sign == '-' && second.sign == '+'){
 
-        return unbounded_int_subtraction(second, first, 1);
+        return unbounded_int_subtraction(second, first);
     }
 
     digit *pointer_towards_digit_of_the_first_number = first.last;
@@ -723,6 +726,20 @@ unbounded_int string2unbounded_int(const char *e){
     unbounded_int *temporary = malloc(sizeof(unbounded_int));
 
     if(temporary == NULL) abort();
+
+    if(*e == '0'){
+
+        temporary->sign = '+';
+        temporary->length = 1;
+        temporary->first = malloc(sizeof(digit));
+        if(temporary->first == NULL) abort();
+        temporary->last = malloc(sizeof(digit));
+        if(temporary->last == NULL) abort();
+        temporary->first = temporary->last;
+        temporary->first->value = temporary->last->value = '0';
+
+        return *temporary;
+    }
 
     if(*e == '-'){
 
