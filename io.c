@@ -3,8 +3,10 @@
 //
 
 ///////////////////////////////
-///// Version 0.0.1 //////////
+///// Version 0.0.2 //////////
 /////////////////////////////
+
+/// TODO: Find a good way in which to test these features and commence implementing the parser.
 
 // Headers belonging to the standard C library.
 #include <assert.h>
@@ -108,3 +110,26 @@ static int _get_line(char line[], int buffer, int starting_position, FILE *input
 }
 
 // Implementation of the extern functions which are specified within the associated header of this compilation unit.
+extern void read_file(const char *path){
+    /**
+     * @param path; a constant string literal which indicates the location where the file is stored.
+     *
+     * This here method initialises the reading process and it handles the interpretation of the lines read.
+     *
+     * @since 0.0.2
+     * @version 0.0.1
+     * @author Andrei-Paul Ionescu
+     */
+
+     // Determine whether the input given to this method is valid or not.
+    assert(path);
+
+    // Instantiate a new FILE object which will we will use so as to retrieve the information stored within the target
+    // file.
+    FILE *input = fopen(path, "r");
+
+    // Check to see whether any errors had occurred whilst opening the file.
+    if(input == NULL) abort();
+
+    printf("%s", );
+}
