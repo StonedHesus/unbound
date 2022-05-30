@@ -799,45 +799,47 @@ static void read(void) {
          *
          *
          * @author Andrei-Paul Ionescu
-         * @date 01.04.2022
-         * @version 0.01
-         * @location BU Licences Sorbonne Campus PMC
+         * @date 30.05.2022
+         * @version 0.0.2
          */
 
         assert(path);
 
-        FILE *temporary;
-        char *line = malloc(sizeof(char) * BUFFER_SIZE);
-        if (line == NULL) {
 
-            printf("ERROR: The file could not be read!\n");
-            abort();
-        }
-        size_t len;
-        ssize_t read;
 
-        temporary = fopen(path, "r");
 
-        if (temporary == NULL) {
-
-            printf("File error: The file which you wanted to read does not exist! "
-                   "We advise double checking the path you used.\n");
-            exit(1);
-        }
-
-        while (1) {
-
-            read = getline(&line, &len, temporary);
-
-            if (read == -1) break;
-            write(line);
-            parseLine(line);
-        }
-
-        fclose(temporary);
-        if (line)
-            free(line);
-        //exit(EXIT_SUCCESS);
+//        FILE *temporary;
+//        char *line = malloc(sizeof(char) * BUFFER_SIZE);
+//        if (line == NULL) {
+//
+//            printf("ERROR: The file could not be read!\n");
+//            abort();
+//        }
+//        size_t len;
+//        ssize_t read;
+//
+//        temporary = fopen(path, "r");
+//
+//        if (temporary == NULL) {
+//
+//            printf("File error: The file which you wanted to read does not exist! "
+//                   "We advise double checking the path you used.\n");
+//            exit(1);
+//        }
+//
+//        while (1) {
+//
+//            read = getline(&line, &len, temporary);
+//
+//            if (read == -1) break;
+//            write(line);
+//            parseLine(line);
+//        }
+//
+//        fclose(temporary);
+//        if (line)
+//            free(line);
+//        //exit(EXIT_SUCCESS);
     }
 
     static int isFileName(const char *entity) {

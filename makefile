@@ -12,6 +12,7 @@ calc_unbounded_int: calc_unbounded_int.o dictionary.o unbounded-int.o input-mana
 input-manager.o: input-manager.c input-manager.h
 dictionary.o: dictionary.c dictionary.h
 unbounded-int.o: unbounded-int.c unbounded-int.h
+io.o: io.c io.h
 
 calc_unbounded_int.o: calc_unbounded_int.c unbounded-int.h input-manager.h dictionary.h
 test.o: test.c unbounded-int.h dictionary.h

@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include "syntax-tree.h"
 
-#define BUFFER 1000000000 // The language does not deal with numbers which has more digits than this value.
+#define BUFFER 1000000000 // The language does not deal with numbers which have more digits than this value.
 
 /////////////////////////////
 //// Version 0.0.1 /////////
