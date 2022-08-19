@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/main.c
+stdio.h
+-
+stdlib.h
+-
+unbounded-int.h
+/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/unbounded-int.h
+
+/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/unbounded-int.h
+assert.h
+-
+ctype.h
+-
+

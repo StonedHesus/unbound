@@ -1,0 +1,59 @@
+############################################################################################################################################################################
+# Tests for dictionary object:
+	[1] Creating a dictionary and adding the pair("my_first_variable", 1234) where 1234 is an unbounded_intobject should cause no problem and thus no error to be triggered if it does then there is some issue with the code.
+1234	[2] Searching for the newly added unbounded_int object, whose value is 1234 ought to yield that objectfrom within the dictionary..
+		TEST VALUE: 
+############################################################################################################################################################################
+# Tests for ll2unbounded_int:
+	[1] Creating an unbounded_int via the aid of a long long integer. This here test should output the values 123456789
+			TEST VALUE: 123456789
+	[2] In order to ensure that our doubled linked list is set up correctly, this test ought to print the following value on screen: 987654321.
+			TEST VALUE: 987654321
+	[3]  Creating a negative unbounded_int via the aid of a long long integer. This here test should output the following value on screen: -12345.
+			TEST VALUE: 12345
+
+############################################################################################################################################################################
+
+# Tests for unbounded_int_cmp_unbounded_int:
+	[1] Comparing two unbounded_int object of same sign:
+		[i] If the objects both have positive sign and the first one is longer than the second then this test should yield the value 1. 
+			TEST VALUE: 1
+		[ii] If the objects both have positive sign and the second one is longer than the first then this test should yield the value -1. 
+			TEST VALUE: -1
+		[iii] If the objects both have positive sign and the first one is the same length as the second then this test should yield the value 0 if they are equal, -1 if the second is bigger or 1 
+			if the first is the max between the two numbers. 
+			TEST VALUE: 0
+		[iv] If the objects both have negative sign and the first one is longer than the second then this test should yield the value -1. 
+			TEST VALUE: -1
+		[v] If the objects both have negative sign and the second one is longer than the first then this test should yield the value 1. 
+			TEST VALUE: 1
+		[vi] If the objects both have negative sign and the first one is the same length as the second then this test should yield the value 0 if they are equal, -1 if the second is bigger or 1 if 			the first is the max between the two numbers. 
+			TEST VALUE: 1
+
+############################################################################################################################################################################
+
+# Tests for unbounded_int_sum:
+	 [1] Adding two unbounded_int of the same size and same sign.
+		[i] Given the values 1234 and 1866 the result ought to be 3100.
+			TEST VALUE: 3100
+		[ii] Given the values -1234 and -1866 the result ought to be -3100.
+			TEST VALUE: 3100
+	 [2] Adding two unbounded_int of the same size and different sign.
+		[i] Given the values 123 and -123 the program ought to yield the value 0.
+			TEST VALUE: 246
+		[ii] Given the values -123 and 123 the program ought to yield the value 0.
+			TEST VALUE: 246
+		[iii] Given the values -123 and 120 the program ought to yield the value -3.
+			TEST VALUE: 243
+		[ii] Given the values 120 and -123 the program ought to yield the value -3.
+			TEST VALUE: 243
+
+	 [3] Adding two unbounded_int of the different size and signs which can be different or not.
+		[i] Given the values 123 and 0 the result ought to be 123. 
+			TEST VALUE: 123
+
+		[ii] Given the values -123 and 0 the result ought to be -123.
+			TEST VALUE: 123
+		[iii] Given the values 1000 and 999 the program ought to yield the value 1999.
+			TEST VALUE: 1999
+############################################################################################################################################################################
