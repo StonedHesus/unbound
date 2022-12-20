@@ -20,9 +20,9 @@
 
 
 /// Custom libraries.
-#include "unbounded-int.h"
-#include "dictionary.h"
-#include "input-manager.h"
+#include "../unbounded-int/unbounded-int.h"
+#include "../dictionary/dictionary.h"
+#include "../input-manager/input-manager.h"
 
 // Macro constants of the file.
 #define DEFAULT "\033[0m"

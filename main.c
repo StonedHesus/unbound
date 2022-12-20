@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "unbounded-int.h"
-#include "dictionary.h"
+#include "src/unbounded-int/unbounded-int.h"
+#include "src/dictionary/dictionary.h"
 
 
 int main() {

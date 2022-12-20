@@ -1,3 +1,3 @@
-/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/cmake-build-debug/CMakeFiles/unbounded_int.dir
+/Users/stonedhesus/C/github/unbounded-int/cmake-build-debug/CMakeFiles/unbounded_int.dir
+/Users/stonedhesus/C/github/unbounded-int/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/stonedhesus/C/github/unbounded-int/cmake-build-debug/CMakeFiles/rebuild_cache.dir
