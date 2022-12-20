@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/main.c" "CMakeFiles/unbounded_int.dir/main.c.o" "gcc" "CMakeFiles/unbounded_int.dir/main.c.o.d"
+  "/Users/stonedhesus/C/github/unbounded-int/main.c" "CMakeFiles/unbounded_int.dir/main.c.o" "gcc" "CMakeFiles/unbounded_int.dir/main.c.o.d"
   )
 
 # Targets to which this target links.

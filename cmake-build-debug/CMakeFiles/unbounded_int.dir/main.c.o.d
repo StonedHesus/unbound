@@ -1,5 +1,5 @@
 CMakeFiles/unbounded_int.dir/main.c.o: \
-  /Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/main.c \
+  /Users/stonedhesus/C/github/unbounded-int/main.c \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/_stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/sys/cdefs.h \
@@ -80,5 +80,5 @@ CMakeFiles/unbounded_int.dir/main.c.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/secure/_strings.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include/secure/_string.h \
-  /Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/unbounded-int.h \
-  /Users/stonedhesus/University/L2/second-semester/C/project/unbounded-int/dictionary.h
+  /Users/stonedhesus/C/github/unbounded-int/src/unbounded-int/unbounded-int.h \
+  /Users/stonedhesus/C/github/unbounded-int/src/dictionary/dictionary.h

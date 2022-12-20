@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "unbounded-int.h"
+#include "../unbounded-int/unbounded-int.h"
 
 #define FRONTWARDS 1
 #define BACKWARDS  0
