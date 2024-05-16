@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "../unbounded-int/unbounded-int.h"
+#include "../unbound/unbound.h"
 #include "dictionary.h"
 
 /**
