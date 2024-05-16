@@ -518,5 +518,3 @@ void print_separator(char separator){
     printf("\n");
 }
 
-
-
