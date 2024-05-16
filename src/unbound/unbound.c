@@ -3,7 +3,7 @@
 //
 
 
-#include "unbounded-int.h"
+#include "unbound.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -245,7 +245,6 @@ void destroy_unbounded_int(unbounded_int unboundedInt){
 
     free(unboundedInt.first);
     free(unboundedInt.last);
-    free(&unboundedInt);
 }
 
 void print_unbounded_int(unbounded_int unboundedInt, int direction, FILE *flot){

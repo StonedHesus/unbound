@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include "../src/unbounded-int/unbounded-int.h"
+#include "../src/unbound/unbound.h"
 #include "../src/dictionary/dictionary.h"
 
 // Macro constants.
